@@ -7,6 +7,7 @@ export default function PreviewPage() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [slug, setSlug] = useState("");
+  const [savedSlug, setSavedSlug] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -16,6 +17,7 @@ export default function PreviewPage() {
     setStatus(data);
     if (data.profile) {
       setSlug(data.profile.slug || "");
+      setSavedSlug(data.profile.slug || "");
       setIsPublic(data.profile.isPublic || false);
     }
     setLoading(false);
@@ -70,7 +72,7 @@ export default function PreviewPage() {
   if (loading) return <div className="text-gray-500">Loading...</div>;
 
   const profile = status?.profile;
-  const publicUrl = slug ? `http://localhost:3000/${slug}` : null;
+  const publicUrl = savedSlug ? `http://localhost:3000/${savedSlug}` : null;
 
   return (
     <div className="max-w-4xl">
