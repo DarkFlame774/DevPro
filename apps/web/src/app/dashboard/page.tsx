@@ -56,8 +56,7 @@ export default function DashboardHome() {
 
       {/* Status Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        {/* GitHub */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-semibold text-gray-700">GitHub</span>
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
@@ -73,8 +72,7 @@ export default function DashboardHome() {
           )}
         </div>
 
-        {/* LeetCode */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-semibold text-gray-700">LeetCode</span>
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
@@ -90,8 +88,7 @@ export default function DashboardHome() {
           )}
         </div>
 
-        {/* Profile */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-semibold text-gray-700">Profile</span>
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
@@ -121,24 +118,24 @@ export default function DashboardHome() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6">
-        <h2 className="text-sm font-semibold text-gray-700 mb-4">Quick Actions</h2>
+      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm mt-8">
+        <h2 className="text-sm font-semibold text-slate-900 mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
           <button
             onClick={handleGenerate}
-            className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+            className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 hover:shadow-md transition-all duration-200"
           >
             Generate Snapshot
           </button>
           <a
             href="/dashboard/connections"
-            className="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-all duration-200"
           >
             Manage Connections
           </a>
           <a
             href="/dashboard/templates"
-            className="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-all duration-200"
           >
             Change Template
           </a>

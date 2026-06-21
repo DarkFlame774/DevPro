@@ -96,10 +96,10 @@ export default function TemplatesPage() {
             <button
               key={t.id}
               onClick={() => handleSelect(t.id)}
-              className={`w-full text-left bg-white border-2 rounded-xl p-6 transition-all duration-200 ${
+              className={`w-full text-left bg-white border-2 rounded-xl p-6 transition-all duration-200 hover:-translate-y-1 ${
                 isActive
-                  ? "border-indigo-500 shadow-md shadow-indigo-100"
-                  : "border-gray-200 hover:border-gray-300"
+                  ? "border-indigo-500 shadow-lg shadow-indigo-100"
+                  : "border-slate-200 hover:border-slate-300 hover:shadow-md"
               }`}
             >
               <div className="flex items-start gap-5">

@@ -72,7 +72,7 @@ export default function ConnectionsPage() {
       {error && <div className="mb-6 px-4 py-3 rounded-lg text-sm font-medium bg-red-50 text-red-700">{error}</div>}
 
       {/* GitHub */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
+      <div className="bg-white border border-slate-200 rounded-xl p-6 mb-6 shadow-sm hover:shadow-md transition-all duration-200">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center text-white text-lg font-bold">G</div>
@@ -116,7 +116,7 @@ export default function ConnectionsPage() {
       </div>
 
       {/* LeetCode */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6">
+      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center text-white text-lg font-bold">L</div>
