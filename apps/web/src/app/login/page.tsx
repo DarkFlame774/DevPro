@@ -61,6 +61,28 @@ export default function LoginPage() {
     <div style={{ fontFamily: "sans-serif", padding: "2rem", maxWidth: "400px" }}>
       <h1>{isLogin ? "Log In" : "Sign Up"}</h1>
       
+      <div style={{ marginBottom: "2rem" }}>
+        <a 
+          href="http://localhost:3001/api/auth/github"
+          style={{ 
+            display: "block", 
+            padding: "0.75rem", 
+            background: "#24292e", 
+            color: "#fff", 
+            textAlign: "center", 
+            textDecoration: "none",
+            borderRadius: "4px",
+            fontWeight: "bold"
+          }}
+        >
+          Continue with GitHub
+        </a>
+      </div>
+
+      <div style={{ textAlign: "center", marginBottom: "1rem", color: "#666" }}>
+        --- OR ---
+      </div>
+
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <div>
           <label>Email</label>

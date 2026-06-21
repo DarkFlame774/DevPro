@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import pool from '../db';
 import { requireAuth } from '../middleware/auth.middleware';
 import { SignupRequest, LoginRequest, User } from '@devpro/types';
+import { exchangeCodeForToken, fetchGithubUser } from '../services/github.service';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_dev_secret_do_not_use_in_prod';
@@ -116,6 +117,79 @@ router.get('/me', requireAuth, async (req: Request, res: Response) => {
   } catch (error) {
     console.error('/me error:', error);
     return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// --- GITHUB OAUTH ROUTES ---
+
+// 1. Redirect to GitHub
+router.get('/github', (req: Request, res: Response) => {
+  const clientId = process.env.GITHUB_CLIENT_ID;
+  const redirectUri = 'http://localhost:3001/api/auth/github/callback';
+  // We request 'read:user' to get their profile, and 'user:email' to get their email address.
+  const scope = 'read:user user:email';
+  
+  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
+  res.redirect(githubAuthUrl);
+});
+
+// 2. Handle the Callback from GitHub
+router.get('/github/callback', async (req: Request, res: Response) => {
+  const { code } = req.query;
+
+  if (!code || typeof code !== 'string') {
+    return res.status(400).json({ error: 'No code provided by GitHub' });
+  }
+
+  try {
+    // Exchange code for access token
+    const accessToken = await exchangeCodeForToken(code);
+    if (!accessToken) {
+      return res.status(401).json({ error: 'Failed to exchange code for access token' });
+    }
+
+    // Fetch user details
+    const githubUser = await fetchGithubUser(accessToken);
+    if (!githubUser || !githubUser.email) {
+      return res.status(400).json({ error: 'Failed to fetch GitHub profile or email' });
+    }
+
+    // Find or Create the user
+    let userId: string;
+    const existingUserRes = await pool.query('SELECT id FROM users WHERE email = $1', [githubUser.email]);
+
+    if (existingUserRes.rows.length > 0) {
+      // User exists!
+      userId = existingUserRes.rows[0].id;
+    } else {
+      // Create new user (notice password_hash is NULL because they are an OAuth user)
+      const newUserRes = await pool.query(
+        'INSERT INTO users (email) VALUES ($1) RETURNING id',
+        [githubUser.email]
+      );
+      userId = newUserRes.rows[0].id;
+    }
+
+    // Upsert the platform connection so we save the Access Token for later API calls
+    await pool.query(`
+      INSERT INTO platform_connections (user_id, platform, platform_username, access_token, status)
+      VALUES ($1, 'github', $2, $3, 'connected')
+      ON CONFLICT (user_id, platform) 
+      DO UPDATE SET 
+        platform_username = EXCLUDED.platform_username,
+        access_token = EXCLUDED.access_token,
+        status = 'connected',
+        last_sync_at = NOW();
+    `, [userId, githubUser.username, accessToken]);
+
+    // Set our own JWT session cookie
+    setTokenCookie(res, userId);
+
+    // Redirect the user back to the frontend!
+    res.redirect('http://localhost:3000/login?success=true');
+  } catch (error) {
+    console.error('GitHub OAuth error:', error);
+    res.redirect('http://localhost:3000/login?error=oauth_failed');
   }
 });
 
