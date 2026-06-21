@@ -2,228 +2,147 @@
 
 import { useEffect, useState } from "react";
 
-export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null);
+export default function DashboardHome() {
+  const [status, setStatus] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const [leetcodeUsername, setLeetcodeUsername] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState("professional");
 
-  // 1. Check Auth Status
   useEffect(() => {
-    fetch("http://localhost:3001/api/auth/me", { credentials: "include" })
-      .then((res) => {
-        if (!res.ok) throw new Error("Unauthorized");
-        return res.json();
-      })
+    fetch("http://localhost:3001/api/dashboard/status", { credentials: "include" })
+      .then((res) => res.json())
       .then((data) => {
-        setUser(data.user);
+        setStatus(data);
         setLoading(false);
       })
-      .catch(() => {
-        // Redirect to login if not authenticated
-        window.location.href = "/login";
-      });
+      .catch(() => setLoading(false));
   }, []);
 
-  // 2. Sync GitHub Data
-  const handleSyncGitHub = async () => {
+  const handleGenerate = async () => {
     setMessage("");
-    setError("");
-    try {
-      const res = await fetch("http://localhost:3001/api/sync/github", {
-        method: "POST",
-        credentials: "include",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to sync GitHub");
-      setMessage("GitHub data synchronized successfully! Check your database.");
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
-
-  // 3. Link LeetCode Account
-  const handleLinkLeetCode = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setMessage("");
-    setError("");
-    try {
-      const res = await fetch("http://localhost:3001/api/connections/leetcode", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ username: leetcodeUsername }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to link LeetCode");
-      setMessage("LeetCode account linked! You can now sync your stats.");
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
-
-  // 4. Sync LeetCode Data
-  const handleSyncLeetCode = async () => {
-    setMessage("");
-    setError("");
-    try {
-      const res = await fetch("http://localhost:3001/api/sync/leetcode", {
-        method: "POST",
-        credentials: "include",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to sync LeetCode");
-      setMessage("LeetCode data synchronized successfully! Check your database.");
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
-
-  // 5. Update Profile Settings
-  const handleProfileSettings = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setMessage("");
-    setError("");
-    const formData = new FormData(e.currentTarget);
-    const slug = formData.get("slug");
-    const isPublic = formData.get("isPublic") === "on";
-
-    try {
-      const res = await fetch("http://localhost:3001/api/profiles/settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ slug, isPublic, template: selectedTemplate }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to update profile settings");
-      setMessage("Profile settings updated successfully!");
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
-
-  // 6. Generate Profile Snapshot
-  const handleGenerateProfile = async () => {
-    setMessage("");
-    setError("");
     try {
       const res = await fetch("http://localhost:3001/api/profiles/generate", {
         method: "POST",
         credentials: "include",
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to generate profile");
-      setMessage("Profile Snapshot Generated! Your public portfolio is now live with the latest data.");
+      if (!res.ok) throw new Error(data.error);
+      setMessage("Profile snapshot generated successfully!");
+      // Refresh status
+      const statusRes = await fetch("http://localhost:3001/api/dashboard/status", { credentials: "include" });
+      setStatus(await statusRes.json());
     } catch (err: any) {
-      setError(err.message);
+      setMessage(`Error: ${err.message}`);
     }
   };
 
-  if (loading) return <div style={{ padding: "2rem" }}>Loading...</div>;
+  if (loading) return <div className="text-gray-500">Loading...</div>;
+
+  const github = status?.connections?.github;
+  const leetcode = status?.connections?.leetcode;
+  const profile = status?.profile;
 
   return (
-    <div style={{ fontFamily: "sans-serif", padding: "2rem", maxWidth: "600px", margin: "0 auto" }}>
-      <h1>Developer Dashboard</h1>
-      <p>Welcome, {user.email || "Developer"}!</p>
+    <div className="max-w-4xl">
+      <h1 className="text-2xl font-bold text-gray-900 mb-1">Dashboard</h1>
+      <p className="text-gray-500 text-sm mb-8">Welcome back, {status?.email || "Developer"}</p>
 
-      {message && <div style={{ padding: "1rem", background: "#d4edda", color: "#155724", marginBottom: "1rem" }}>{message}</div>}
-      {error && <div style={{ padding: "1rem", background: "#f8d7da", color: "#721c24", marginBottom: "1rem" }}>{error}</div>}
+      {message && (
+        <div className={`mb-6 px-4 py-3 rounded-lg text-sm font-medium ${
+          message.startsWith("Error") ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"
+        }`}>
+          {message}
+        </div>
+      )}
 
-      <div style={{ border: "1px solid #ddd", padding: "1.5rem", borderRadius: "8px", marginBottom: "2rem", background: "#f8f9fa" }}>
-        <h2 style={{ color: "#007bff" }}>Step 3: Publish Your Portfolio</h2>
-        <p>Once you have synced your data and set your slug below, click here to generate your public portfolio snapshot.</p>
-        <button 
-          onClick={handleGenerateProfile}
-          style={{ padding: "0.75rem 1.5rem", background: "#28a745", color: "white", border: "none", cursor: "pointer", fontSize: "1.1rem", fontWeight: "bold", borderRadius: "4px" }}
-        >
-          Generate Profile Snapshot
-        </button>
-      </div>
-
-      <div style={{ border: "1px solid #ddd", padding: "1.5rem", borderRadius: "8px", marginBottom: "2rem" }}>
-        <h2>Profile Settings</h2>
-        <p>Claim your public URL, choose a template, and set visibility.</p>
-        <form onSubmit={handleProfileSettings} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <div>
-            <label style={{ display: "block", marginBottom: "0.5rem" }}>Public URL (Slug)</label>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <span>localhost:3000/</span>
-              <input type="text" name="slug" placeholder="e.g. alice" required style={{ padding: "0.5rem", flex: 1 }} />
-            </div>
+      {/* Status Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        {/* GitHub */}
+        <div className="bg-white border border-gray-200 rounded-xl p-5">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-semibold text-gray-700">GitHub</span>
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+              github ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
+            }`}>
+              {github ? "Connected" : "Not connected"}
+            </span>
           </div>
+          {github && (
+            <p className="text-xs text-gray-400">
+              @{github.username} · Last sync: {github.lastSyncAt ? new Date(github.lastSyncAt).toLocaleDateString() : "Never"}
+            </p>
+          )}
+        </div>
 
-          <div>
-            <label style={{ display: "block", marginBottom: "0.75rem", fontWeight: "bold" }}>Template</label>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem" }}>
-              {[
-                { id: "professional", name: "Professional", desc: "Dark, glassmorphism cards", color: "#6366f1" },
-                { id: "minimal", name: "Minimal", desc: "Light, typography-focused", color: "#78716c" },
-                { id: "terminal", name: "Terminal", desc: "CLI aesthetic, monospace", color: "#22c55e" },
-              ].map((t) => (
-                <div
-                  key={t.id}
-                  onClick={() => setSelectedTemplate(t.id)}
-                  style={{
-                    padding: "1rem",
-                    border: selectedTemplate === t.id ? `2px solid ${t.color}` : "2px solid #ddd",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    background: selectedTemplate === t.id ? `${t.color}10` : "white",
-                    textAlign: "center",
-                    transition: "all 0.2s",
-                  }}
+        {/* LeetCode */}
+        <div className="bg-white border border-gray-200 rounded-xl p-5">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-semibold text-gray-700">LeetCode</span>
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+              leetcode ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
+            }`}>
+              {leetcode ? "Connected" : "Not connected"}
+            </span>
+          </div>
+          {leetcode && (
+            <p className="text-xs text-gray-400">
+              @{leetcode.username} · Last sync: {leetcode.lastSyncAt ? new Date(leetcode.lastSyncAt).toLocaleDateString() : "Never"}
+            </p>
+          )}
+        </div>
+
+        {/* Profile */}
+        <div className="bg-white border border-gray-200 rounded-xl p-5">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-semibold text-gray-700">Profile</span>
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+              profile?.isPublic ? "bg-indigo-100 text-indigo-700" : "bg-gray-100 text-gray-500"
+            }`}>
+              {profile?.isPublic ? "Public" : "Private"}
+            </span>
+          </div>
+          {profile ? (
+            <div className="text-xs text-gray-400">
+              <p>Template: <span className="capitalize text-gray-600">{profile.template}</span></p>
+              {profile.slug && profile.isPublic && (
+                <a
+                  href={`http://localhost:3000/${profile.slug}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-indigo-600 hover:underline mt-1 inline-block"
                 >
-                  <div style={{ fontWeight: "bold", fontSize: "0.9rem", color: selectedTemplate === t.id ? t.color : "#333" }}>{t.name}</div>
-                  <div style={{ fontSize: "0.75rem", color: "#888", marginTop: "4px" }}>{t.desc}</div>
-                </div>
-              ))}
+                  View live →
+                </a>
+              )}
             </div>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <input type="checkbox" name="isPublic" id="isPublic" />
-            <label htmlFor="isPublic">Make my profile public</label>
-          </div>
-          <button type="submit" style={{ padding: "0.5rem 1rem", background: "#007bff", color: "white", border: "none", cursor: "pointer", alignSelf: "flex-start" }}>Save Profile Settings</button>
-        </form>
+          ) : (
+            <p className="text-xs text-gray-400">Not configured yet</p>
+          )}
+        </div>
       </div>
 
-      <div style={{ border: "1px solid #ddd", padding: "1.5rem", borderRadius: "8px", marginBottom: "2rem" }}>
-        <h2>GitHub Integration</h2>
-        <p>If you logged in with GitHub, your account is already connected.</p>
-        <button 
-          onClick={handleSyncGitHub}
-          style={{ padding: "0.5rem 1rem", background: "#24292e", color: "white", border: "none", cursor: "pointer" }}
-        >
-          Sync GitHub Data
-        </button>
-      </div>
-
-      <div style={{ border: "1px solid #ddd", padding: "1.5rem", borderRadius: "8px" }}>
-        <h2>LeetCode Integration</h2>
-        <p>Link your public LeetCode username to fetch your problem-solving stats.</p>
-        
-        <form onSubmit={handleLinkLeetCode} style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
-          <input 
-            type="text" 
-            placeholder="LeetCode Username" 
-            value={leetcodeUsername}
-            onChange={(e) => setLeetcodeUsername(e.target.value)}
-            required
-            style={{ padding: "0.5rem", flex: 1 }}
-          />
-          <button type="submit" style={{ padding: "0.5rem 1rem" }}>Link Account</button>
-        </form>
-
-        <button 
-          onClick={handleSyncLeetCode}
-          style={{ padding: "0.5rem 1rem", background: "#ffa116", color: "white", border: "none", cursor: "pointer" }}
-        >
-          Sync LeetCode Data
-        </button>
+      {/* Quick Actions */}
+      <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <h2 className="text-sm font-semibold text-gray-700 mb-4">Quick Actions</h2>
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={handleGenerate}
+            className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            Generate Snapshot
+          </button>
+          <a
+            href="/dashboard/connections"
+            className="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Manage Connections
+          </a>
+          <a
+            href="/dashboard/templates"
+            className="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Change Template
+          </a>
+        </div>
       </div>
     </div>
   );
