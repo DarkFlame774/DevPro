@@ -104,6 +104,23 @@ export default function DashboardPage() {
     }
   };
 
+  // 6. Generate Profile Snapshot
+  const handleGenerateProfile = async () => {
+    setMessage("");
+    setError("");
+    try {
+      const res = await fetch("http://localhost:3001/api/profiles/generate", {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to generate profile");
+      setMessage("Profile Snapshot Generated! Your public portfolio is now live with the latest data.");
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
   if (loading) return <div style={{ padding: "2rem" }}>Loading...</div>;
 
   return (
@@ -113,6 +130,17 @@ export default function DashboardPage() {
 
       {message && <div style={{ padding: "1rem", background: "#d4edda", color: "#155724", marginBottom: "1rem" }}>{message}</div>}
       {error && <div style={{ padding: "1rem", background: "#f8d7da", color: "#721c24", marginBottom: "1rem" }}>{error}</div>}
+
+      <div style={{ border: "1px solid #ddd", padding: "1.5rem", borderRadius: "8px", marginBottom: "2rem", background: "#f8f9fa" }}>
+        <h2 style={{ color: "#007bff" }}>Step 3: Publish Your Portfolio</h2>
+        <p>Once you have synced your data and set your slug below, click here to generate your public portfolio snapshot.</p>
+        <button 
+          onClick={handleGenerateProfile}
+          style={{ padding: "0.75rem 1.5rem", background: "#28a745", color: "white", border: "none", cursor: "pointer", fontSize: "1.1rem", fontWeight: "bold", borderRadius: "4px" }}
+        >
+          Generate Profile Snapshot
+        </button>
+      </div>
 
       <div style={{ border: "1px solid #ddd", padding: "1.5rem", borderRadius: "8px", marginBottom: "2rem" }}>
         <h2>Profile Settings</h2>

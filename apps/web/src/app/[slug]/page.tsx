@@ -20,10 +20,10 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
   }
 
   const profile = await res.json();
-  const github = profile.github?.profile_json || {};
-  const stats = profile.github?.stats_json || {};
-  const repos = profile.github?.repos_json || [];
-  const leetcode = profile.leetcode?.stats_json || null;
+  const user = profile.user || {};
+  const stats = profile.stats || {};
+  const featuredProjects = profile.featuredProjects || [];
+  const leetcode = profile.leetcode || null;
 
   return (
     <div className={`min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500/30 ${inter.className}`}>
@@ -37,19 +37,19 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
         
         {/* Header Section (Glassmorphism Card) */}
         <header className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-8 mb-12 flex flex-col md:flex-row items-center gap-8 shadow-2xl transition-transform hover:-translate-y-1 duration-300">
-          {github.avatar_url && (
+          {user.avatar_url && (
             <img 
-              src={github.avatar_url} 
-              alt={github.name || slug} 
+              src={user.avatar_url} 
+              alt={user.name || slug} 
               className="w-32 h-32 rounded-full border-4 border-indigo-500/30 object-cover"
             />
           )}
           <div className="text-center md:text-left">
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-              {github.name || slug}
+              {user.name || slug}
             </h1>
             <p className="text-xl text-slate-400 mt-2 font-medium">
-              {github.bio || "Software Engineer & Open Source Contributor"}
+              {user.bio || "Software Engineer & Open Source Contributor"}
             </p>
             <div className="mt-4 flex flex-wrap gap-3 justify-center md:justify-start">
               <span className="px-3 py-1 bg-white/10 rounded-full text-sm font-semibold">{stats.followers || 0} Followers</span>
@@ -78,15 +78,15 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
           </section>
 
           {/* LeetCode Stats */}
-          {leetcode ? (
+          {leetcode && leetcode.profile && leetcode.submitStats ? (
             <section className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-8 shadow-xl hover:bg-white/10 transition-colors duration-300">
               <h2 className="text-2xl font-bold mb-6 text-yellow-400">LeetCode Stats</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-black/20 p-4 rounded-xl text-center">
-                  <div className="text-3xl font-bold text-white">{leetcode.profile.ranking}</div>
+                  <div className="text-3xl font-bold text-white">{leetcode.profile.ranking || "N/A"}</div>
                   <div className="text-sm text-slate-400 mt-1">Global Rank</div>
                 </div>
-                {leetcode.submitStats.acSubmissionNum.map((stat: any) => (
+                {leetcode.submitStats.acSubmissionNum?.map((stat: any) => (
                   <div key={stat.difficulty} className="bg-black/20 p-4 rounded-xl text-center">
                     <div className={`text-2xl font-bold ${
                       stat.difficulty === 'Easy' ? 'text-green-400' :
@@ -109,12 +109,9 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
 
         {/* Top Repositories */}
         <section>
-          <h2 className="text-3xl font-bold mb-8 text-cyan-300">Top Repositories</h2>
+          <h2 className="text-3xl font-bold mb-8 text-cyan-300">Featured Projects</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {repos
-              .sort((a: any, b: any) => b.stargazers_count - a.stargazers_count)
-              .slice(0, 6)
-              .map((repo: any) => (
+            {featuredProjects.map((repo: any) => (
                 <a 
                   key={repo.id} 
                   href={repo.html_url}

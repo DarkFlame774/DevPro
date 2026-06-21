@@ -1,10 +1,40 @@
 import { Router, Request, Response } from 'express';
 import pool from '../db';
 import { requireAuth } from '../middleware/auth.middleware';
+import { generateProfile } from '../services/profile.service';
 
 const router = Router();
 
-// 1. Set Profile Settings (slug, visibility)
+// 1. Generate Profile Snapshot
+router.post('/generate', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.userId;
+    const profileData = await generateProfile(userId);
+    return res.status(200).json({ message: 'Profile generated successfully', profile: profileData });
+  } catch (error: any) {
+    console.error('Generate profile error:', error);
+    return res.status(500).json({ error: error.message || 'Internal server error' });
+  }
+});
+
+// 2. Fetch Logged-in User's Profile
+router.get('/me', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.userId;
+    const profileRes = await pool.query('SELECT slug, template, is_public, profile_data FROM profiles WHERE user_id = $1', [userId]);
+    
+    if (profileRes.rows.length === 0) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+    
+    return res.status(200).json(profileRes.rows[0]);
+  } catch (error) {
+    console.error('Fetch my profile error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 3. Set Profile Settings (slug, visibility)
 router.post('/settings', requireAuth, async (req: Request, res: Response) => {
   try {
     const userId = req.user!.userId;
@@ -14,7 +44,6 @@ router.post('/settings', requireAuth, async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Slug is required' });
     }
 
-    // Upsert profile settings
     await pool.query(`
       INSERT INTO profiles (user_id, slug, is_public, updated_at)
       VALUES ($1, $2, $3, NOW())
@@ -35,14 +64,13 @@ router.post('/settings', requireAuth, async (req: Request, res: Response) => {
   }
 });
 
-// 2. Fetch Public Profile by Slug
+// 4. Fetch Public Profile Snapshot by Slug (Public Route)
 router.get('/:slug', async (req: Request, res: Response) => {
   try {
     const { slug } = req.params;
 
-    // Fetch the profile
     const profileRes = await pool.query(
-      'SELECT user_id, template, is_public FROM profiles WHERE slug = $1',
+      'SELECT is_public, profile_data FROM profiles WHERE slug = $1',
       [slug]
     );
 
@@ -56,28 +84,11 @@ router.get('/:slug', async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'This profile is private' });
     }
 
-    const userId = profile.user_id;
+    if (!profile.profile_data) {
+       return res.status(400).json({ error: 'This profile has not been generated yet.' });
+    }
 
-    // Fetch GitHub data
-    const githubRes = await pool.query(
-      'SELECT profile_json, repos_json, stats_json FROM github_data WHERE user_id = $1',
-      [userId]
-    );
-    
-    // Fetch LeetCode data
-    const leetcodeRes = await pool.query(
-      'SELECT stats_json FROM leetcode_data WHERE user_id = $1',
-      [userId]
-    );
-
-    // Build the public DTO
-    const publicProfile = {
-      template: profile.template,
-      github: githubRes.rows.length > 0 ? githubRes.rows[0] : null,
-      leetcode: leetcodeRes.rows.length > 0 ? leetcodeRes.rows[0] : null,
-    };
-
-    return res.status(200).json(publicProfile);
+    return res.status(200).json(profile.profile_data);
   } catch (error) {
     console.error('Fetch public profile error:', error);
     return res.status(500).json({ error: 'Internal server error' });

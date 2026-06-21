@@ -7,16 +7,45 @@ export interface HealthStatus {
 
 export interface User {
   id: string;
-  email: string | null;
+  email: string;
   created_at: string;
 }
 
 export interface SignupRequest {
-  email: string;
-  password: string;
+  email?: string;
+  password?: string;
 }
 
 export interface LoginRequest {
-  email: string;
-  password: string;
+  email?: string;
+  password?: string;
+}
+
+export interface ProfileData {
+  user: {
+    name: string | null;
+    bio: string | null;
+    avatar_url: string | null;
+    location: string | null;
+  };
+  stats: {
+    total_stars: number;
+    followers: number;
+    top_languages: Record<string, number>;
+  };
+  featuredProjects: Array<{
+    id: number;
+    name: string;
+    description: string | null;
+    html_url: string;
+    stargazers_count: number;
+    language: string | null;
+  }>;
+  leetcode: any | null; // Full LeetCode stats JSON or null
+  metadata: {
+    template: string;
+    is_public: boolean;
+    slug: string | null;
+    generated_at: string;
+  };
 }
