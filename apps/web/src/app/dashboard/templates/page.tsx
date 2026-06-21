@@ -34,7 +34,7 @@ export default function TemplatesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/dashboard/status", { credentials: "include" })
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/dashboard/status`, { credentials: "include" })
       .then((res) => res.json())
       .then((data) => {
         if (data.profile) {
@@ -51,7 +51,7 @@ export default function TemplatesPage() {
     setMessage("");
     try {
       // Save settings with the new template
-      const res = await fetch("http://localhost:3001/api/profiles/settings", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/profiles/settings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -61,7 +61,7 @@ export default function TemplatesPage() {
       if (!res.ok) throw new Error(data.error);
 
       // Auto-regenerate the snapshot
-      const genRes = await fetch("http://localhost:3001/api/profiles/generate", {
+      const genRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/profiles/generate`, {
         method: "POST",
         credentials: "include",
       });

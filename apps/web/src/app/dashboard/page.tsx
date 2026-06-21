@@ -8,7 +8,7 @@ export default function DashboardHome() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/dashboard/status", { credentials: "include" })
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/dashboard/status`, { credentials: "include" })
       .then((res) => res.json())
       .then((data) => {
         setStatus(data);
@@ -20,7 +20,7 @@ export default function DashboardHome() {
   const handleGenerate = async () => {
     setMessage("");
     try {
-      const res = await fetch("http://localhost:3001/api/profiles/generate", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/profiles/generate`, {
         method: "POST",
         credentials: "include",
       });
@@ -28,7 +28,7 @@ export default function DashboardHome() {
       if (!res.ok) throw new Error(data.error);
       setMessage("Profile snapshot generated successfully!");
       // Refresh status
-      const statusRes = await fetch("http://localhost:3001/api/dashboard/status", { credentials: "include" });
+      const statusRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/dashboard/status`, { credentials: "include" });
       setStatus(await statusRes.json());
     } catch (err: any) {
       setMessage(`Error: ${err.message}`);

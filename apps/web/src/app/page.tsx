@@ -14,7 +14,7 @@ export default function Home() {
 
   useEffect(() => {
     // Quick check if user has an active session
-    fetch("http://localhost:3001/api/auth/me", { credentials: "include" })
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/auth/me`, { credentials: "include" })
       .then((res) => {
         if (res.ok) setIsLoggedIn(true);
       })
@@ -71,7 +71,7 @@ export default function Home() {
                 </Link>
                 <button
                   onClick={async () => {
-                    await fetch("http://localhost:3001/api/auth/logout", { method: "POST", credentials: "include" });
+                    await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/auth/logout`, { method: "POST", credentials: "include" });
                     setIsLoggedIn(false);
                     window.location.reload();
                   }}

@@ -5,7 +5,7 @@ import MinimalTemplate from "@/components/templates/MinimalTemplate";
 import TerminalTemplate from "@/components/templates/TerminalTemplate";
 
 async function fetchProfile(slug: string) {
-  const res = await fetch(`http://localhost:3001/api/profiles/${slug}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/profiles/${slug}`, {
     cache: 'no-store', // Always fetch fresh data (no caching during dev)
   });
 

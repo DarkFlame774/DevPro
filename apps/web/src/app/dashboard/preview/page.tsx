@@ -12,7 +12,7 @@ export default function PreviewPage() {
   const [copied, setCopied] = useState(false);
 
   const fetchStatus = async () => {
-    const res = await fetch("http://localhost:3001/api/dashboard/status", { credentials: "include" });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/dashboard/status`, { credentials: "include" });
     const data = await res.json();
     setStatus(data);
     if (data.profile) {
@@ -28,7 +28,7 @@ export default function PreviewPage() {
   const handleSaveSettings = async () => {
     setMessage("");
     try {
-      const res = await fetch("http://localhost:3001/api/profiles/settings", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/profiles/settings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -50,7 +50,7 @@ export default function PreviewPage() {
   const handleGenerate = async () => {
     setMessage("");
     try {
-      const res = await fetch("http://localhost:3001/api/profiles/generate", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/profiles/generate`, {
         method: "POST",
         credentials: "include",
       });

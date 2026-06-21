@@ -10,7 +10,7 @@ export default function ConnectionsPage() {
   const [leetcodeUsername, setLeetcodeUsername] = useState("");
 
   const fetchStatus = async () => {
-    const res = await fetch("http://localhost:3001/api/dashboard/status", { credentials: "include" });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/dashboard/status`, { credentials: "include" });
     const data = await res.json();
     setStatus(data);
     setLoading(false);
@@ -21,7 +21,7 @@ export default function ConnectionsPage() {
   const handleSyncGitHub = async () => {
     setMessage(""); setError("");
     try {
-      const res = await fetch("http://localhost:3001/api/sync/github", { method: "POST", credentials: "include" });
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/sync/github`, { method: "POST", credentials: "include" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setMessage("GitHub data synced successfully!");
@@ -33,7 +33,7 @@ export default function ConnectionsPage() {
     e.preventDefault();
     setMessage(""); setError("");
     try {
-      const res = await fetch("http://localhost:3001/api/connections/leetcode", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/connections/leetcode`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -50,7 +50,7 @@ export default function ConnectionsPage() {
   const handleSyncLeetCode = async () => {
     setMessage(""); setError("");
     try {
-      const res = await fetch("http://localhost:3001/api/sync/leetcode", { method: "POST", credentials: "include" });
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/sync/leetcode`, { method: "POST", credentials: "include" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setMessage("LeetCode data synced successfully!");
@@ -107,7 +107,7 @@ export default function ConnectionsPage() {
           </div>
         ) : (
           <a
-            href="http://localhost:3001/api/auth/github"
+            href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/auth/github`}
             className="block w-full text-center px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-medium rounded-lg hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
           >
             Connect GitHub
