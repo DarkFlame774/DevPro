@@ -155,7 +155,8 @@ router.get('/me', requireAuth, async (req: Request, res: Response) => {
 // 1. Redirect to GitHub
 router.get('/github', (req: Request, res: Response) => {
   const clientId = process.env.GITHUB_CLIENT_ID;
-  const redirectUri = 'http://localhost:3001/api/auth/github/callback';
+  const baseUrl = process.env.RENDER_EXTERNAL_URL || process.env.BACKEND_URL || 'http://localhost:3001';
+  const redirectUri = `${baseUrl}/api/auth/github/callback`;
   // We request 'read:user' to get their profile, and 'user:email' to get their email address.
   const scope = 'read:user user:email';
   
@@ -218,10 +219,12 @@ router.get('/github/callback', async (req: Request, res: Response) => {
     setTokenCookie(res, userId);
 
     // Redirect the user back to the frontend dashboard!
-    res.redirect('http://localhost:3000/dashboard');
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    res.redirect(`${frontendUrl}/dashboard`);
   } catch (error) {
     console.error('GitHub OAuth error:', error);
-    res.redirect('http://localhost:3000/login?error=oauth_failed');
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    res.redirect(`${frontendUrl}/login?error=oauth_failed`);
   }
 });
 
