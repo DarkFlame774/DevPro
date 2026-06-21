@@ -40,7 +40,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       credentials: "include",
     });
     router.refresh();
-    router.replace("/login");
+    router.replace("/");
   };
 
   if (isLoading) {
