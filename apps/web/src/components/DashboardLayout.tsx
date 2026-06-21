@@ -14,6 +14,7 @@ const navItems = [
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch("http://localhost:3001/api/auth/me", { credentials: "include" })
@@ -21,9 +22,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         if (!res.ok) throw new Error("Unauthorized");
         return res.json();
       })
-      .then((data) => setEmail(data.user?.email || ""))
+      .then((data) => {
+        setEmail(data.user?.email || "");
+        setIsLoading(false);
+      })
       .catch(() => {
-        window.location.href = "/login";
+        window.location.replace("/login");
       });
   }, []);
 
@@ -32,8 +36,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       method: "POST",
       credentials: "include",
     });
-    window.location.href = "/login";
+    window.location.replace("/login");
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+          <p className="text-sm font-medium text-slate-500">Authenticating...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex font-sans">
