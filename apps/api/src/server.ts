@@ -7,7 +7,7 @@ import { HealthStatus } from '@devpro/types';
 import authRoutes from './routes/auth.routes';
 import syncRoutes from './routes/sync.routes';
 import connectionsRoutes from './routes/connections.routes';
-
+import profilesRoutes from './routes/profiles.routes';
 
 // Ensure dotenv is loaded pointing to correct .env
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -28,7 +28,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/sync', syncRoutes);
 app.use('/api/connections', connectionsRoutes);
-
+app.use('/api/profiles', profilesRoutes);
 
 app.get('/health', (req: Request, res: Response) => {
   const status: HealthStatus = {
