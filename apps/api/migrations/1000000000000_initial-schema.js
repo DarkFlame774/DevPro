@@ -1,10 +1,7 @@
 exports.up = (pgm) => {
-  // UUID Extension
-  pgm.createExtension('uuid-ossp', { ifNotExists: true });
-
   // Users Table
   pgm.createTable('users', {
-    id: { type: 'uuid', primaryKey: true, default: pgm.func('uuid_generate_v4()') },
+    id: { type: 'uuid', primaryKey: true, default: pgm.func('gen_random_uuid()') },
     email: { type: 'varchar(255)', unique: true, notNull: false },
     password_hash: { type: 'varchar(255)', notNull: false },
     created_at: { type: 'timestamp', notNull: true, default: pgm.func('current_timestamp') },
@@ -12,7 +9,7 @@ exports.up = (pgm) => {
 
   // Platform Connections Table
   pgm.createTable('platform_connections', {
-    id: { type: 'uuid', primaryKey: true, default: pgm.func('uuid_generate_v4()') },
+    id: { type: 'uuid', primaryKey: true, default: pgm.func('gen_random_uuid()') },
     user_id: { type: 'uuid', notNull: true, references: 'users(id)', onDelete: 'CASCADE' },
     platform: { type: 'varchar(50)', notNull: true },
     platform_username: { type: 'varchar(255)', notNull: true },
@@ -28,7 +25,7 @@ exports.up = (pgm) => {
 
   // GitHub Data Table
   pgm.createTable('github_data', {
-    id: { type: 'uuid', primaryKey: true, default: pgm.func('uuid_generate_v4()') },
+    id: { type: 'uuid', primaryKey: true, default: pgm.func('gen_random_uuid()') },
     user_id: { type: 'uuid', notNull: true, unique: true, references: 'users(id)', onDelete: 'CASCADE' },
     profile_json: { type: 'jsonb' },
     repos_json: { type: 'jsonb' },
@@ -38,7 +35,7 @@ exports.up = (pgm) => {
 
   // LeetCode Data Table
   pgm.createTable('leetcode_data', {
-    id: { type: 'uuid', primaryKey: true, default: pgm.func('uuid_generate_v4()') },
+    id: { type: 'uuid', primaryKey: true, default: pgm.func('gen_random_uuid()') },
     user_id: { type: 'uuid', notNull: true, unique: true, references: 'users(id)', onDelete: 'CASCADE' },
     stats_json: { type: 'jsonb' },
     updated_at: { type: 'timestamp', notNull: true, default: pgm.func('current_timestamp') },
@@ -46,7 +43,7 @@ exports.up = (pgm) => {
 
   // Profiles Table
   pgm.createTable('profiles', {
-    id: { type: 'uuid', primaryKey: true, default: pgm.func('uuid_generate_v4()') },
+    id: { type: 'uuid', primaryKey: true, default: pgm.func('gen_random_uuid()') },
     user_id: { type: 'uuid', notNull: true, unique: true, references: 'users(id)', onDelete: 'CASCADE' },
     slug: { type: 'varchar(100)', unique: true, notNull: true },
     template: { type: 'varchar(50)', notNull: true, default: "'minimal'" },
