@@ -102,7 +102,7 @@ export default function DashboardHome() {
               <p>Template: <span className="capitalize text-slate-700 dark:text-slate-300">{profile.template}</span></p>
               {profile.slug && profile.isPublic && (
                 <a
-                  href={`http://localhost:3000/${profile.slug}`}
+                  href={`/${profile.slug}`}
                   target="_blank"
                   rel="noreferrer"
                   className="text-indigo-600 dark:text-indigo-400 hover:underline mt-1 inline-block"

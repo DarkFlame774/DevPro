@@ -64,7 +64,8 @@ export default function PreviewPage() {
   };
 
   const copyUrl = () => {
-    navigator.clipboard.writeText(`http://localhost:3000/${slug}`);
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+    navigator.clipboard.writeText(`${origin}/${slug}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -72,7 +73,8 @@ export default function PreviewPage() {
   if (loading) return <div className="text-gray-500">Loading...</div>;
 
   const profile = status?.profile;
-  const publicUrl = savedSlug ? `http://localhost:3000/${savedSlug}` : null;
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+  const publicUrl = savedSlug ? `${origin}/${savedSlug}` : null;
 
   return (
     <div className="max-w-4xl">
@@ -94,7 +96,7 @@ export default function PreviewPage() {
           <div className="flex-1">
             <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1.5">Public URL</label>
             <div className="flex items-center">
-              <span className="text-sm text-slate-400 dark:text-slate-500 mr-1">localhost:3000/</span>
+              <span className="text-sm text-slate-400 dark:text-slate-500 mr-1">{typeof window !== 'undefined' ? window.location.host : 'localhost:3000'}/</span>
               <input
                 type="text"
                 value={slug}
