@@ -1,4 +1,5 @@
 import pool from '../db';
+import { decrypt } from '../utils/encryption';
 
 export const syncGitHubData = async (userId: string) => {
   // 1. Get the access token from the database
@@ -11,7 +12,7 @@ export const syncGitHubData = async (userId: string) => {
     throw new Error('GitHub account not connected');
   }
 
-  const token = connectionRes.rows[0].access_token;
+  const token = decrypt(connectionRes.rows[0].access_token);
   const headers = {
     Authorization: `Bearer ${token}`,
     Accept: 'application/vnd.github.v3+json',

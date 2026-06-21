@@ -10,8 +10,8 @@ router.post('/leetcode', requireAuth, async (req: Request, res: Response) => {
     const userId = req.user!.userId;
     const { username } = req.body;
 
-    if (!username) {
-      return res.status(400).json({ error: 'LeetCode username is required' });
+    if (!username || typeof username !== 'string' || username.trim() === '') {
+      return res.status(400).json({ error: 'LeetCode username is required and must be a valid string' });
     }
 
     // Upsert the platform connection

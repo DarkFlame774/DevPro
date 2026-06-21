@@ -5,6 +5,7 @@ import pool from '../db';
 import { requireAuth } from '../middleware/auth.middleware';
 import { SignupRequest, LoginRequest, User } from '@devpro/types';
 import { exchangeCodeForToken, fetchGithubUser } from '../services/github.service';
+import { encrypt } from '../utils/encryption';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_dev_secret_do_not_use_in_prod';
@@ -25,6 +26,15 @@ router.post('/signup', async (req: Request, res: Response) => {
     const { email, password } = req.body as SignupRequest;
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    // Basic Input Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters long' });
     }
 
     // Check if user already exists
@@ -58,8 +68,18 @@ router.post('/signup', async (req: Request, res: Response) => {
 router.post('/login', async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body as LoginRequest;
+
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    // Basic Input Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters long' });
     }
 
     // Find user by email
@@ -170,6 +190,8 @@ router.get('/github/callback', async (req: Request, res: Response) => {
       userId = newUserRes.rows[0].id;
     }
 
+    const encryptedToken = encrypt(accessToken);
+
     // Upsert the platform connection so we save the Access Token for later API calls
     await pool.query(`
       INSERT INTO platform_connections (user_id, platform, platform_username, access_token, status)
@@ -180,7 +202,7 @@ router.get('/github/callback', async (req: Request, res: Response) => {
         access_token = EXCLUDED.access_token,
         status = 'connected',
         last_sync_at = NOW();
-    `, [userId, githubUser.username, accessToken]);
+    `, [userId, githubUser.username, encryptedToken]);
 
     // Set our own JWT session cookie
     setTokenCookie(res, userId);

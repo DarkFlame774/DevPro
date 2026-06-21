@@ -40,8 +40,13 @@ router.post('/settings', requireAuth, async (req: Request, res: Response) => {
     const userId = req.user!.userId;
     const { slug, isPublic, template } = req.body;
 
-    if (!slug) {
+    if (!slug || typeof slug !== 'string') {
       return res.status(400).json({ error: 'Slug is required' });
+    }
+
+    const slugRegex = /^[a-zA-Z0-9-]+$/;
+    if (!slugRegex.test(slug)) {
+      return res.status(400).json({ error: 'Slug can only contain letters, numbers, and hyphens' });
     }
 
     const validTemplates = ['minimal', 'professional', 'terminal'];

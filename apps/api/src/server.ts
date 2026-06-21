@@ -9,9 +9,19 @@ import syncRoutes from './routes/sync.routes';
 import connectionsRoutes from './routes/connections.routes';
 import profilesRoutes from './routes/profiles.routes';
 import dashboardRoutes from './routes/dashboard.routes';
+import rateLimit from 'express-rate-limit';
 
 // Ensure dotenv is loaded pointing to correct .env
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
+// Startup Environment Validation
+const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET', 'GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET'];
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    console.error(`[FATAL] Missing required environment variable: ${envVar}`);
+    process.exit(1);
+  }
+}
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -25,8 +35,17 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// Rate Limiting for Auth
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Limit each IP to 20 requests per windowMs
+  message: { error: 'Too many requests from this IP, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Mount our routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/sync', syncRoutes);
 app.use('/api/connections', connectionsRoutes);
 app.use('/api/profiles', profilesRoutes);
