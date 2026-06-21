@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ThemeToggle } from "./ThemeToggle";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: "📊" },
@@ -51,18 +52,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex font-sans transition-colors duration-300">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col shrink-0 shadow-sm z-10">
+      <aside className="w-64 bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 shadow-sm z-10 transition-colors duration-300">
         {/* Logo */}
-        <div className="p-6 border-b border-slate-100">
-          <Link href="/" className="text-2xl font-extrabold tracking-tight text-slate-900 block">
-            Dev<span className="text-indigo-600">Pro</span>
-          </Link>
-          <div className="mt-2 flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <p className="text-xs font-medium text-slate-500 truncate">{email}</p>
+        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <div>
+            <Link href="/" className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white block">
+              Dev<span className="text-indigo-600 dark:text-indigo-400">Pro</span>
+            </Link>
+            <div className="mt-2 flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">{email}</p>
+            </div>
           </div>
+          <ThemeToggle />
         </div>
 
         {/* Navigation */}
@@ -76,8 +80,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? "bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-100"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 shadow-sm ring-1 ring-indigo-100 dark:ring-indigo-500/20"
+                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200"
                 }`}
               >
                 <span className="text-lg opacity-80">{item.icon}</span>
@@ -88,10 +92,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-100 bg-slate-50/50">
+        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 transition-colors duration-300">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:text-red-600 hover:border-red-200 hover:bg-red-50 rounded-xl transition-colors duration-200 shadow-sm"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-colors duration-200 shadow-sm"
           >
             Sign Out
           </button>

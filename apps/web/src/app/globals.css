@@ -7,12 +7,7 @@
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* Let Tailwind handle dark mode background via utility classes rather than hardcoded variables */
 
 body {
   color: var(--foreground);

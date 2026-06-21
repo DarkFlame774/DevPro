@@ -7,21 +7,21 @@ const templates = [
     id: "professional",
     name: "Professional",
     description: "Dark mode with glassmorphism cards, gradient backgrounds, and hover animations. Best for showcasing a premium portfolio.",
-    color: "#6366f1",
+    color: "bg-indigo-600",
     preview: "bg-slate-900",
   },
   {
     id: "minimal",
     name: "Minimal",
     description: "Clean, light-mode, typography-focused layout. Elegant whitespace and structured hierarchy. Feels like a modern resume.",
-    color: "#78716c",
+    color: "bg-stone-500",
     preview: "bg-stone-50",
   },
   {
     id: "terminal",
     name: "Terminal",
     description: "Monospace CLI aesthetic with command-output formatting. Fun, developer-centric, and instantly recognizable.",
-    color: "#22c55e",
+    color: "bg-emerald-600",
     preview: "bg-gray-950",
   },
 ];
@@ -77,47 +77,50 @@ export default function TemplatesPage() {
   if (loading) return <div className="text-gray-500">Loading...</div>;
 
   return (
-    <div className="max-w-3xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">Templates</h1>
-      <p className="text-gray-500 text-sm mb-8">Choose how your public portfolio looks</p>
+    <div className="max-w-4xl">
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">Templates</h1>
+      <p className="text-slate-500 dark:text-slate-400 text-sm mb-8">Choose how your portfolio looks to the world</p>
 
-      {message && (
-        <div className={`mb-6 px-4 py-3 rounded-lg text-sm font-medium ${
-          message.startsWith("Error") ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"
-        }`}>
-          {message}
-        </div>
-      )}
+      {message && <div className="mb-6 px-4 py-3 rounded-lg text-sm font-medium bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400">{message}</div>}
 
-      <div className="space-y-4">
-        {templates.map((t) => {
-          const isActive = current === t.id;
+      <div className="grid md:grid-cols-3 gap-6">
+        {templates.map((tpl) => {
+          const isActive = current === tpl.id;
           return (
-            <button
-              key={t.id}
-              onClick={() => handleSelect(t.id)}
-              className={`w-full text-left bg-white border-2 rounded-xl p-6 transition-all duration-200 hover:-translate-y-1 ${
+            <div 
+              key={tpl.id}
+              onClick={() => handleSelect(tpl.id)}
+              className={`relative rounded-xl border-2 transition-all cursor-pointer overflow-hidden ${
                 isActive
-                  ? "border-indigo-500 shadow-lg shadow-indigo-100"
-                  : "border-slate-200 hover:border-slate-300 hover:shadow-md"
+                  ? "border-indigo-600 shadow-md ring-4 ring-indigo-50 dark:ring-indigo-900/20" 
+                  : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-sm"
               }`}
             >
-              <div className="flex items-start gap-5">
-                {/* Color preview swatch */}
-                <div className={`w-16 h-16 rounded-lg shrink-0 ${t.preview} border border-gray-200`} />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-semibold text-gray-900">{t.name}</h3>
-                    {isActive && (
-                      <span className="text-xs px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full font-medium">
-                        Active
-                      </span>
-                    )}
+              {isActive && (
+                <div className="absolute top-3 right-3 bg-indigo-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shadow-sm z-10">
+                  ✓
+                </div>
+              )}
+              
+              <div className={`h-40 ${tpl.color} flex items-center justify-center p-6 relative`}>
+                {/* Fake UI mockup inside the template card */}
+                <div className="w-full h-full bg-white/90 dark:bg-slate-950/90 backdrop-blur-sm rounded-lg shadow-sm border border-slate-200/50 dark:border-slate-800/50 p-3 space-y-2">
+                  <div className="flex gap-2">
+                    <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800" />
+                    <div className="space-y-1 flex-1">
+                      <div className="h-3 w-1/3 bg-slate-200 dark:bg-slate-800 rounded" />
+                      <div className="h-2 w-1/4 bg-slate-100 dark:bg-slate-800/50 rounded" />
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1 leading-relaxed">{t.description}</p>
+                  <div className="h-12 w-full bg-slate-50 dark:bg-slate-900 rounded border border-slate-100 dark:border-slate-800" />
                 </div>
               </div>
-            </button>
+
+              <div className="p-5 bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 h-full">
+                <h3 className="font-semibold text-slate-900 dark:text-white">{tpl.name}</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{tpl.description}</p>
+              </div>
+            </div>
           );
         })}
       </div>
