@@ -6,8 +6,18 @@ import { requireAuth } from '../middleware/auth.middleware';
 import { SignupRequest, LoginRequest, User } from '@devpro/types';
 import { exchangeCodeForToken, fetchGithubUser } from '../services/github.service';
 import { encrypt } from '../utils/encryption';
+import rateLimit from 'express-rate-limit';
 
 const router = Router();
+
+// Rate Limiting for Login & Signup attempts (to prevent brute force)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Limit each IP to 20 requests per windowMs
+  message: { error: 'Too many requests from this IP, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_dev_secret_do_not_use_in_prod';
 
 // Helper function to generate a JWT and set it as an HTTP-only cookie
@@ -21,7 +31,7 @@ const setTokenCookie = (res: Response, userId: string) => {
   });
 };
 
-router.post('/signup', async (req: Request, res: Response) => {
+router.post('/signup', authLimiter, async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body as SignupRequest;
     if (!email || !password) {
@@ -65,7 +75,7 @@ router.post('/signup', async (req: Request, res: Response) => {
   }
 });
 
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', authLimiter, async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body as LoginRequest;
 
