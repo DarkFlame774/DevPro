@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -14,6 +14,7 @@ const navItems = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -28,16 +29,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         setIsLoading(false);
       })
       .catch(() => {
-        window.location.replace("/login");
+        router.replace("/login");
       });
   }, []);
 
   const handleLogout = async () => {
+    setIsLoading(true);
     await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/auth/logout`, {
       method: "POST",
       credentials: "include",
     });
-    window.location.replace("/login");
+    router.refresh();
+    router.replace("/login");
   };
 
   if (isLoading) {
