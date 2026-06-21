@@ -217,8 +217,8 @@ router.get('/github/callback', async (req: Request, res: Response) => {
     // Set our own JWT session cookie
     setTokenCookie(res, userId);
 
-    // Redirect the user back to the frontend!
-    res.redirect('http://localhost:3000/login?success=true');
+    // Redirect the user back to the frontend dashboard!
+    res.redirect('http://localhost:3000/dashboard');
   } catch (error) {
     console.error('GitHub OAuth error:', error);
     res.redirect('http://localhost:3000/login?error=oauth_failed');
