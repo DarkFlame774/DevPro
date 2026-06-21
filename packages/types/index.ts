@@ -41,11 +41,13 @@ export interface ProfileData {
     stargazers_count: number;
     language: string | null;
   }>;
-  leetcode: any | null; // Full LeetCode stats JSON or null
+  leetcode: any | null;
   metadata: {
-    template: string;
+    template: TemplateType;
     is_public: boolean;
     slug: string | null;
     generated_at: string;
   };
 }
+
+export type TemplateType = 'minimal' | 'professional' | 'terminal';

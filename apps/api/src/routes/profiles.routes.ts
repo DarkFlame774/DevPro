@@ -34,29 +34,33 @@ router.get('/me', requireAuth, async (req: Request, res: Response) => {
   }
 });
 
-// 3. Set Profile Settings (slug, visibility)
+// 3. Set Profile Settings (slug, visibility, template)
 router.post('/settings', requireAuth, async (req: Request, res: Response) => {
   try {
     const userId = req.user!.userId;
-    const { slug, isPublic } = req.body;
+    const { slug, isPublic, template } = req.body;
 
     if (!slug) {
       return res.status(400).json({ error: 'Slug is required' });
     }
 
+    const validTemplates = ['minimal', 'professional', 'terminal'];
+    const selectedTemplate = validTemplates.includes(template) ? template : 'professional';
+
     await pool.query(`
-      INSERT INTO profiles (user_id, slug, is_public, updated_at)
-      VALUES ($1, $2, $3, NOW())
+      INSERT INTO profiles (user_id, slug, is_public, template, updated_at)
+      VALUES ($1, $2, $3, $4, NOW())
       ON CONFLICT (user_id) 
       DO UPDATE SET 
         slug = EXCLUDED.slug,
         is_public = EXCLUDED.is_public,
+        template = EXCLUDED.template,
         updated_at = NOW();
-    `, [userId, slug, isPublic === true]);
+    `, [userId, slug, isPublic === true, selectedTemplate]);
 
     return res.status(200).json({ message: 'Profile settings updated' });
   } catch (error: any) {
-    if (error.code === '23505') { // Unique constraint violation in Postgres
+    if (error.code === '23505') { 
       return res.status(400).json({ error: 'That slug is already taken' });
     }
     console.error('Profile settings error:', error);

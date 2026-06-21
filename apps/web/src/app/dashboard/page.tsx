@@ -8,6 +8,7 @@ export default function DashboardPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [leetcodeUsername, setLeetcodeUsername] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState("professional");
 
   // 1. Check Auth Status
   useEffect(() => {
@@ -94,7 +95,7 @@ export default function DashboardPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ slug, isPublic }),
+        body: JSON.stringify({ slug, isPublic, template: selectedTemplate }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to update profile settings");
@@ -144,7 +145,7 @@ export default function DashboardPage() {
 
       <div style={{ border: "1px solid #ddd", padding: "1.5rem", borderRadius: "8px", marginBottom: "2rem" }}>
         <h2>Profile Settings</h2>
-        <p>Claim your public URL and choose whether your portfolio is visible to the world.</p>
+        <p>Claim your public URL, choose a template, and set visibility.</p>
         <form onSubmit={handleProfileSettings} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div>
             <label style={{ display: "block", marginBottom: "0.5rem" }}>Public URL (Slug)</label>
@@ -153,6 +154,35 @@ export default function DashboardPage() {
               <input type="text" name="slug" placeholder="e.g. alice" required style={{ padding: "0.5rem", flex: 1 }} />
             </div>
           </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "0.75rem", fontWeight: "bold" }}>Template</label>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem" }}>
+              {[
+                { id: "professional", name: "Professional", desc: "Dark, glassmorphism cards", color: "#6366f1" },
+                { id: "minimal", name: "Minimal", desc: "Light, typography-focused", color: "#78716c" },
+                { id: "terminal", name: "Terminal", desc: "CLI aesthetic, monospace", color: "#22c55e" },
+              ].map((t) => (
+                <div
+                  key={t.id}
+                  onClick={() => setSelectedTemplate(t.id)}
+                  style={{
+                    padding: "1rem",
+                    border: selectedTemplate === t.id ? `2px solid ${t.color}` : "2px solid #ddd",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    background: selectedTemplate === t.id ? `${t.color}10` : "white",
+                    textAlign: "center",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  <div style={{ fontWeight: "bold", fontSize: "0.9rem", color: selectedTemplate === t.id ? t.color : "#333" }}>{t.name}</div>
+                  <div style={{ fontSize: "0.75rem", color: "#888", marginTop: "4px" }}>{t.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <input type="checkbox" name="isPublic" id="isPublic" />
             <label htmlFor="isPublic">Make my profile public</label>
