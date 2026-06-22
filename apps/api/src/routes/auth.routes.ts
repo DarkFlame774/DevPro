@@ -189,20 +189,34 @@ router.get('/github/callback', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Failed to fetch GitHub profile or email' });
     }
 
-    // Find or Create the user
-    let userId: string;
-    const existingUserRes = await pool.query('SELECT id FROM users WHERE email = $1', [githubUser.email]);
+    // 1. Check if the user is already logged in (Connecting an account)
+    let userId: string | null = null;
+    const token = req.cookies.token;
+    
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+        userId = decoded.userId;
+      } catch (err) {
+        // Token invalid or expired, ignore and proceed as logged out
+      }
+    }
 
-    if (existingUserRes.rows.length > 0) {
-      // User exists!
-      userId = existingUserRes.rows[0].id;
-    } else {
-      // Create new user (notice password_hash is NULL because they are an OAuth user)
-      const newUserRes = await pool.query(
-        'INSERT INTO users (email) VALUES ($1) RETURNING id',
-        [githubUser.email]
-      );
-      userId = newUserRes.rows[0].id;
+    // 2. Find or Create the user if NOT logged in
+    if (!userId) {
+      const existingUserRes = await pool.query('SELECT id FROM users WHERE email = $1', [githubUser.email]);
+
+      if (existingUserRes.rows.length > 0) {
+        // User exists!
+        userId = existingUserRes.rows[0].id;
+      } else {
+        // Create new user (notice password_hash is NULL because they are an OAuth user)
+        const newUserRes = await pool.query(
+          'INSERT INTO users (email) VALUES ($1) RETURNING id',
+          [githubUser.email]
+        );
+        userId = newUserRes.rows[0].id;
+      }
     }
 
     const encryptedToken = encrypt(accessToken);
