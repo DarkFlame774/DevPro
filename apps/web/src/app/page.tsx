@@ -137,7 +137,7 @@ export default function Home() {
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-50 dark:from-slate-900 via-transparent to-transparent z-10 h-full w-full pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-50 dark:from-slate-900 h-full w-full pointer-events-none" />
           
           <div 
             className="rounded-2xl border border-slate-200/60 dark:border-slate-700/60 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-2xl overflow-hidden relative z-0 transition-transform duration-300 ease-out will-change-transform"
