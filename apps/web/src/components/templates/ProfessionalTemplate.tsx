@@ -74,8 +74,16 @@ function categorizeLangs(languages: CanonicalLanguage[]): Record<string, Canonic
 }
 
 export default function ProfessionalTemplate({ profile, slug }: Props) {
-  const { metadata, identity, activity, projects, technicalFocus, developerSignals } = profile;
-  const accentKey: AccentColor = metadata.accentColor || "blue";
+  const { 
+    metadata = {} as any, 
+    identity = {} as any, 
+    activity = { contributionSummary: [] }, 
+    projects = [], 
+    technicalFocus = { languages: [], technologies: [] }, 
+    developerSignals = [] 
+  } = profile || {};
+  
+  const accentKey: AccentColor = metadata?.accentColor || "blue";
   const a = accents[accentKey];
 
   const techStack = categorizeLangs(technicalFocus.languages || []);

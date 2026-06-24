@@ -27,7 +27,14 @@ router.get('/me', requireAuth, async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Profile not found' });
     }
     
-    return res.status(200).json(profileRes.rows[0]);
+    let profileData = profileRes.rows[0].profile_data;
+
+    // Read-Time Upgrade: Regenerate on the fly if schema is outdated
+    if (profileData && (!profileData.metadata || profileData.metadata.schemaVersion !== 1)) {
+      profileData = await generateProfile(userId);
+    }
+
+    return res.status(200).json({ ...profileRes.rows[0], profile_data: profileData });
   } catch (error) {
     console.error('Fetch my profile error:', error);
     return res.status(500).json({ error: 'Internal server error' });
@@ -83,7 +90,7 @@ router.get('/:slug', async (req: Request, res: Response) => {
     const { slug } = req.params;
 
     const profileRes = await pool.query(
-      'SELECT is_public, profile_data FROM profiles WHERE slug = $1',
+      'SELECT user_id, is_public, profile_data FROM profiles WHERE slug = $1',
       [slug]
     );
 
@@ -101,7 +108,14 @@ router.get('/:slug', async (req: Request, res: Response) => {
        return res.status(400).json({ error: 'This profile has not been generated yet.' });
     }
 
-    return res.status(200).json(profile.profile_data);
+    let profileData = profile.profile_data;
+
+    // Read-Time Upgrade: Regenerate on the fly if schema is outdated
+    if (!profileData.metadata || profileData.metadata.schemaVersion !== 1) {
+      profileData = await generateProfile(profile.user_id);
+    }
+
+    return res.status(200).json(profileData);
   } catch (error) {
     console.error('Fetch public profile error:', error);
     return res.status(500).json({ error: 'Internal server error' });

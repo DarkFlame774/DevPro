@@ -8,7 +8,13 @@ interface Props {
 }
 
 export default function MinimalTemplate({ profile, slug }: Props) {
-  const { identity, activity, technicalFocus, developerSignals, projects } = profile;
+  const { 
+    identity = {} as any, 
+    activity = { contributionSummary: [] }, 
+    projects = [], 
+    technicalFocus = { languages: [], technologies: [] }, 
+    developerSignals = [] 
+  } = profile || {};
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 selection:bg-stone-300">

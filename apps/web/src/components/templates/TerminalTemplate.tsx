@@ -8,9 +8,15 @@ interface Props {
 }
 
 export default function TerminalTemplate({ profile, slug }: Props) {
-  const { identity, activity, technicalFocus, developerSignals, projects } = profile;
+  const { 
+    identity = {} as any, 
+    activity = { contributionSummary: [] }, 
+    technicalFocus = { languages: [], technologies: [] }, 
+    developerSignals = [], 
+    projects = [] 
+  } = profile || {};
 
-  const topLangs = technicalFocus.languages.slice(0, 6);
+  const topLangs = technicalFocus.languages?.slice(0, 6) || [];
 
   return (
     <div className="min-h-screen bg-[#0c0c0c] text-[#b0b0b0] font-mono selection:bg-green-900/40 selection:text-green-300">
