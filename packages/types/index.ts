@@ -21,34 +21,62 @@ export interface LoginRequest {
   password?: string;
 }
 
-export interface ProfileData {
-  user: {
+export interface Evidence {
+  label: string;
+  value: string | number;
+  sourcePlatform: string;
+}
+
+export interface CanonicalProject {
+  id: string;
+  title: string;
+  description: string | null;
+  url: string;
+  evidence: Evidence[];
+}
+
+export interface CanonicalLanguage {
+  name: string;
+  category?: string;
+  evidence: Evidence[];
+}
+
+export interface CanonicalTechnology {
+  name: string;
+  evidence: Evidence[];
+}
+
+export interface DeveloperSignal {
+  observations: string[];
+  evidence: Evidence[];
+}
+
+export interface CanonicalProfile {
+  metadata: {
+    schemaVersion: number;
+    generatedAt: string;
+    template: TemplateType;
+    accentColor?: AccentColor;
+    isPublic: boolean;
+    slug: string | null;
+  };
+  identity: {
     name: string | null;
+    avatarUrl: string | null;
+    headline: string | null;
     bio: string | null;
-    avatar_url: string | null;
     location: string | null;
   };
-  stats: {
-    total_stars: number;
-    followers: number;
-    top_languages: Record<string, number>;
+  activity: {
+    lastActive: string | null;
+    contributionSummary: Evidence[];
   };
-  featuredProjects: Array<{
-    id: number;
-    name: string;
-    description: string | null;
-    html_url: string;
-    stargazers_count: number;
-    language: string | null;
-  }>;
-  leetcode: any | null;
-  metadata: {
-    template: TemplateType;
-    accent_color?: AccentColor;
-    is_public: boolean;
-    slug: string | null;
-    generated_at: string;
+  projects: CanonicalProject[];
+  technicalFocus: {
+    languages: CanonicalLanguage[];
+    technologies: CanonicalTechnology[];
   };
+  developerSignals: DeveloperSignal[];
 }
 
 export type TemplateType = 'minimal' | 'professional' | 'terminal';

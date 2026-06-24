@@ -22,8 +22,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     return { title: "Profile Not Found — DevPro" };
   }
 
-  const name = profile.user?.name || slug;
-  const bio = profile.user?.bio || "Developer Portfolio";
+  const name = profile.identity?.name || slug;
+  const bio = profile.identity?.bio || profile.identity?.headline || "Developer Portfolio";
 
   return {
     title: `${name} — DevPro`,
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     openGraph: {
       title: `${name} — Developer Portfolio`,
       description: bio,
-      images: profile.user?.avatar_url ? [profile.user.avatar_url] : [],
+      images: profile.identity?.avatarUrl ? [profile.identity.avatarUrl] : [],
       type: "profile",
     },
   };
