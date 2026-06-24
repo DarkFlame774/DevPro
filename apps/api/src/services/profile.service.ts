@@ -3,7 +3,7 @@ import { ProfileData } from '@devpro/types';
 
 export const generateProfile = async (userId: string): Promise<ProfileData> => {
   // 1. Fetch raw data from the database
-  const profileRes = await pool.query('SELECT slug, template, is_public FROM profiles WHERE user_id = $1', [userId]);
+  const profileRes = await pool.query('SELECT slug, template, accent_color, is_public FROM profiles WHERE user_id = $1', [userId]);
   const githubRes = await pool.query('SELECT profile_json, repos_json, stats_json FROM github_data WHERE user_id = $1', [userId]);
   const leetcodeRes = await pool.query('SELECT stats_json FROM leetcode_data WHERE user_id = $1', [userId]);
 
@@ -11,7 +11,7 @@ export const generateProfile = async (userId: string): Promise<ProfileData> => {
     throw new Error('Cannot generate profile: GitHub data is missing. Please sync GitHub first.');
   }
 
-  const dbProfile = profileRes.rows[0] || { slug: null, template: 'minimal', is_public: false };
+  const dbProfile = profileRes.rows[0] || { slug: null, template: 'professional', accent_color: 'blue', is_public: false };
   const github = githubRes.rows[0];
   const leetcode = leetcodeRes.rows.length > 0 ? leetcodeRes.rows[0].stats_json : null;
 
@@ -49,6 +49,7 @@ export const generateProfile = async (userId: string): Promise<ProfileData> => {
     leetcode,
     metadata: {
       template: dbProfile.template,
+      accent_color: dbProfile.accent_color || 'blue',
       is_public: dbProfile.is_public,
       slug: dbProfile.slug,
       generated_at: new Date().toISOString(),

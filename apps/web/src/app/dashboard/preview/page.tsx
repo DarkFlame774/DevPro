@@ -36,6 +36,7 @@ export default function PreviewPage() {
           slug,
           isPublic,
           template: status?.profile?.template || "professional",
+          accentColor: status?.profile?.accentColor || "blue",
         }),
       });
       const data = await res.json();

@@ -234,7 +234,7 @@ router.get('/github/callback', async (req: Request, res: Response) => {
     `, [userId, githubUser.username, encryptedToken]);
 
     // Set our own JWT session cookie
-    setTokenCookie(res, userId);
+    setTokenCookie(res, userId!);
 
     // Redirect the user back to the frontend dashboard!
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';

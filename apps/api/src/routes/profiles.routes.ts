@@ -34,11 +34,11 @@ router.get('/me', requireAuth, async (req: Request, res: Response) => {
   }
 });
 
-// 3. Set Profile Settings (slug, visibility, template)
+// 3. Set Profile Settings (slug, visibility, template, accent color)
 router.post('/settings', requireAuth, async (req: Request, res: Response) => {
   try {
     const userId = req.user!.userId;
-    const { slug, isPublic, template } = req.body;
+    const { slug, isPublic, template, accentColor } = req.body;
 
     if (!slug || typeof slug !== 'string') {
       return res.status(400).json({ error: 'Slug is required' });
@@ -52,16 +52,20 @@ router.post('/settings', requireAuth, async (req: Request, res: Response) => {
     const validTemplates = ['minimal', 'professional', 'terminal'];
     const selectedTemplate = validTemplates.includes(template) ? template : 'professional';
 
+    const validAccents = ['blue', 'purple', 'emerald'];
+    const selectedAccent = validAccents.includes(accentColor) ? accentColor : 'blue';
+
     await pool.query(`
-      INSERT INTO profiles (user_id, slug, is_public, template, updated_at)
-      VALUES ($1, $2, $3, $4, NOW())
+      INSERT INTO profiles (user_id, slug, is_public, template, accent_color, updated_at)
+      VALUES ($1, $2, $3, $4, $5, NOW())
       ON CONFLICT (user_id) 
       DO UPDATE SET 
         slug = EXCLUDED.slug,
         is_public = EXCLUDED.is_public,
         template = EXCLUDED.template,
+        accent_color = EXCLUDED.accent_color,
         updated_at = NOW();
-    `, [userId, slug, isPublic === true, selectedTemplate]);
+    `, [userId, slug, isPublic === true, selectedTemplate, selectedAccent]);
 
     return res.status(200).json({ message: 'Profile settings updated' });
   } catch (error: any) {

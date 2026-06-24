@@ -44,6 +44,7 @@ export interface ProfileData {
   leetcode: any | null;
   metadata: {
     template: TemplateType;
+    accent_color?: AccentColor;
     is_public: boolean;
     slug: string | null;
     generated_at: string;
@@ -51,3 +52,4 @@ export interface ProfileData {
 }
 
 export type TemplateType = 'minimal' | 'professional' | 'terminal';
+export type AccentColor = 'blue' | 'purple' | 'emerald';
