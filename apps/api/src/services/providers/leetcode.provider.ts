@@ -47,7 +47,7 @@ export class LeetCodeProvider implements EvidenceProvider {
     const problemsSolved = rawJson?.stats?.submitStats?.acSubmissionNum?.[0]?.count || 0;
     const ranking = rawJson?.stats?.profile?.ranking;
     
-    if (problemsSolved > 0) {
+    if (problemsSolved > 50) {
       let observation = 'Practicing Algorithmic Problem Solving';
       if (problemsSolved > 300) observation = 'Consistent Problem Solver';
       if (ranking && ranking < 100000) observation = 'Top Ranked Problem Solver';

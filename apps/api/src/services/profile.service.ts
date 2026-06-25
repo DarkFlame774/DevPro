@@ -148,33 +148,45 @@ export const generateProfile = async (userId: string): Promise<CanonicalProfile>
   });
 
   // --- DEVELOPER SNAPSHOT GENERATION ---
-  const developerSnapshot: string[] = [];
+  const developerSnapshot: { label: string; evidence: Evidence[] }[] = [];
 
   // Snapshot Rule 1: Domain Identity
-  const categoryCounts = new Map<string, number>();
+  const categoryCounts = new Map<string, { repos: number, sources: Evidence[] }>();
   allLanguages.forEach(lang => {
     if (lang.category) {
       const repos = lang.evidence.find(e => e.label === 'Repositories')?.value as number || 0;
-      categoryCounts.set(lang.category, (categoryCounts.get(lang.category) || 0) + repos);
+      const current = categoryCounts.get(lang.category) || { repos: 0, sources: [] };
+      current.repos += repos;
+      current.sources.push({ label: `${lang.name} Repositories`, value: repos, sourcePlatform: 'github', source: 'evidence' });
+      categoryCounts.set(lang.category, current);
     }
   });
 
-  categoryCounts.forEach((repos, category) => {
-    if (repos >= 5) {
-      developerSnapshot.push(`${category} Experience`);
+  categoryCounts.forEach((data, category) => {
+    if (data.repos >= 5) {
+      developerSnapshot.push({
+        label: `${category} Experience`,
+        evidence: data.sources
+      });
     }
   });
 
   // Snapshot Rule 2: Project Focus
   const openSourceCount = allProjects.filter(p => p.tags && p.tags.includes('open-source')).length;
   if (openSourceCount >= 3) {
-    developerSnapshot.push('Open Source Contributor');
+    developerSnapshot.push({
+      label: 'Open Source Contributor',
+      evidence: [{ label: 'Open Source Projects', value: openSourceCount, sourcePlatform: 'github', source: 'evidence' }]
+    });
   }
 
   // Snapshot Rule 3: Platform Signals
   allSignals.forEach(signal => {
     if (signal.observations.includes('Consistent Problem Solver') || signal.observations.includes('Top Ranked Problem Solver')) {
-      developerSnapshot.push(signal.observations[0]);
+      developerSnapshot.push({
+        label: signal.observations[0],
+        evidence: signal.evidence
+      });
     }
   });
 

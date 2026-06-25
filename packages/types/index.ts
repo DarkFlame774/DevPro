@@ -55,6 +55,11 @@ export interface DeveloperSignal {
   evidence: Evidence[];
 }
 
+export interface SnapshotItem {
+  label: string;
+  evidence: Evidence[];
+}
+
 export interface CanonicalProfile {
   metadata: {
     schemaVersion: number;
@@ -62,7 +67,7 @@ export interface CanonicalProfile {
     isPublic: boolean;
     slug: string | null;
   };
-  developerSnapshot: string[];
+  developerSnapshot: SnapshotItem[];
   identity: {
     name: string | null;
     avatarUrl: string | null;
