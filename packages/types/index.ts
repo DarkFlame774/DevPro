@@ -25,12 +25,15 @@ export interface Evidence {
   label: string;
   value: string | number;
   sourcePlatform: string;
+  source?: 'evidence' | 'override';
 }
 
 export interface CanonicalProject {
   id: string;
   title: string;
+  titleSource?: 'evidence' | 'override';
   description: string | null;
+  descriptionSource?: 'evidence' | 'override';
   url: string;
   evidence: Evidence[];
 }
@@ -55,8 +58,6 @@ export interface CanonicalProfile {
   metadata: {
     schemaVersion: number;
     generatedAt: string;
-    template: TemplateType;
-    accentColor?: AccentColor;
     isPublic: boolean;
     slug: string | null;
   };
@@ -66,6 +67,7 @@ export interface CanonicalProfile {
     headline: string | null;
     bio: string | null;
     location: string | null;
+    source?: 'evidence' | 'override';
   };
   activity: {
     lastActive: string | null;

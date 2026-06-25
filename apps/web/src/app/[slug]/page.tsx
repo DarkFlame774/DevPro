@@ -16,11 +16,13 @@ async function fetchProfile(slug: string) {
 // Dynamic SEO metadata
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const profile = await fetchProfile(slug);
+  const payload = await fetchProfile(slug);
 
-  if (!profile) {
+  if (!payload || !payload.evidence) {
     return { title: "Profile Not Found — DevPro" };
   }
+
+  const profile = payload.evidence;
 
   const name = profile.identity?.name || slug;
   const bio = profile.identity?.bio || profile.identity?.headline || "Developer Portfolio";
@@ -39,13 +41,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function PublicProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const profile = await fetchProfile(slug);
+  const payload = await fetchProfile(slug);
 
-  if (!profile) {
+  if (!payload || !payload.evidence) {
     notFound();
   }
 
-  const template = profile.metadata?.template || "professional";
+  const profile = payload.evidence;
+  const template = payload.themePreferences?.template || profile.metadata?.template || "professional";
 
   // Dispatch to the correct template
   switch (template) {

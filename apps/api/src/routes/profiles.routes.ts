@@ -34,7 +34,15 @@ router.get('/me', requireAuth, async (req: Request, res: Response) => {
       profileData = await generateProfile(userId);
     }
 
-    return res.status(200).json({ ...profileRes.rows[0], profile_data: profileData });
+    return res.status(200).json({ 
+      ...profileRes.rows[0], 
+      profile_data: profileData, // keep backward compat for dashboard for now if it relies on this exact key
+      evidence: profileData,
+      themePreferences: {
+        template: profileRes.rows[0].template,
+        accentColor: profileRes.rows[0].accent_color
+      }
+    });
   } catch (error) {
     console.error('Fetch my profile error:', error);
     return res.status(500).json({ error: 'Internal server error' });
@@ -90,7 +98,7 @@ router.get('/:slug', async (req: Request, res: Response) => {
     const { slug } = req.params;
 
     const profileRes = await pool.query(
-      'SELECT user_id, is_public, profile_data FROM profiles WHERE slug = $1',
+      'SELECT user_id, is_public, template, accent_color, profile_data FROM profiles WHERE slug = $1',
       [slug]
     );
 
@@ -115,7 +123,13 @@ router.get('/:slug', async (req: Request, res: Response) => {
       profileData = await generateProfile(profile.user_id);
     }
 
-    return res.status(200).json(profileData);
+    return res.status(200).json({
+      evidence: profileData,
+      themePreferences: {
+        template: profile.template,
+        accentColor: profile.accent_color
+      }
+    });
   } catch (error) {
     console.error('Fetch public profile error:', error);
     return res.status(500).json({ error: 'Internal server error' });
