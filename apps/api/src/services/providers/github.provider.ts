@@ -49,18 +49,26 @@ export class GithubProvider implements EvidenceProvider {
     let repos = rawJson?.repos || [];
     repos = repos.filter((repo: any) => !repo.fork || repo.stargazers_count > 5);
     
-    return repos.map((repo: any) => ({
-      id: `gh-${repo.id}`,
-      title: repo.name,
-      description: repo.description,
-      url: repo.html_url,
-      evidence: [
-        { label: 'Stars', value: repo.stargazers_count, sourcePlatform: 'github' },
-        ...(repo.forks_count > 0 ? [{ label: 'Forks', value: repo.forks_count, sourcePlatform: 'github' }] : []),
-        ...(repo.open_issues_count > 0 ? [{ label: 'Open Issues', value: repo.open_issues_count, sourcePlatform: 'github' }] : []),
-        ...(repo.language ? [{ label: 'Primary Language', value: repo.language, sourcePlatform: 'github' }] : [])
-      ]
-    }));
+    return repos.map((repo: any) => {
+      const tags: string[] = [];
+      if (repo.topics && Array.isArray(repo.topics)) {
+        tags.push(...repo.topics);
+      }
+      
+      return {
+        id: `gh-${repo.id}`,
+        title: repo.name,
+        description: repo.description,
+        url: repo.html_url,
+        tags,
+        evidence: [
+          { label: 'Stars', value: repo.stargazers_count, sourcePlatform: 'github' },
+          ...(repo.forks_count > 0 ? [{ label: 'Forks', value: repo.forks_count, sourcePlatform: 'github' }] : []),
+          ...(repo.open_issues_count > 0 ? [{ label: 'Open Issues', value: repo.open_issues_count, sourcePlatform: 'github' }] : []),
+          ...(repo.language ? [{ label: 'Primary Language', value: repo.language, sourcePlatform: 'github' }] : [])
+        ]
+      };
+    });
   }
 
   extractLanguages(rawJson: any): CanonicalLanguage[] {

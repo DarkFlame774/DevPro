@@ -35,6 +35,7 @@ export interface CanonicalProject {
   description: string | null;
   descriptionSource?: 'evidence' | 'override';
   url: string;
+  tags?: string[];
   evidence: Evidence[];
 }
 
@@ -61,6 +62,7 @@ export interface CanonicalProfile {
     isPublic: boolean;
     slug: string | null;
   };
+  developerSnapshot: string[];
   identity: {
     name: string | null;
     avatarUrl: string | null;

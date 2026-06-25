@@ -3,6 +3,7 @@ import { CanonicalProfile, CanonicalProject, CanonicalLanguage, DeveloperSignal,
 import { EvidenceProvider, PartialIdentity } from './providers/types';
 import { GithubProvider } from './providers/github.provider';
 import { LeetCodeProvider } from './providers/leetcode.provider';
+import { LanguageTaxonomy } from './taxonomy/language-taxonomy';
 
 const providers: EvidenceProvider[] = [
   new GithubProvider(),
@@ -139,6 +140,44 @@ export const generateProfile = async (userId: string): Promise<CanonicalProfile>
     return bRepos - aRepos;
   });
 
+  allLanguages.forEach(lang => {
+    const cat = LanguageTaxonomy[lang.name];
+    if (cat) {
+      lang.category = cat;
+    }
+  });
+
+  // --- DEVELOPER SNAPSHOT GENERATION ---
+  const developerSnapshot: string[] = [];
+
+  // Snapshot Rule 1: Domain Identity
+  const categoryCounts = new Map<string, number>();
+  allLanguages.forEach(lang => {
+    if (lang.category) {
+      const repos = lang.evidence.find(e => e.label === 'Repositories')?.value as number || 0;
+      categoryCounts.set(lang.category, (categoryCounts.get(lang.category) || 0) + repos);
+    }
+  });
+
+  categoryCounts.forEach((repos, category) => {
+    if (repos >= 5) {
+      developerSnapshot.push(`${category} Experience`);
+    }
+  });
+
+  // Snapshot Rule 2: Project Focus
+  const openSourceCount = allProjects.filter(p => p.tags && p.tags.includes('open-source')).length;
+  if (openSourceCount >= 3) {
+    developerSnapshot.push('Open Source Contributor');
+  }
+
+  // Snapshot Rule 3: Platform Signals
+  allSignals.forEach(signal => {
+    if (signal.observations.includes('Consistent Problem Solver') || signal.observations.includes('Top Ranked Problem Solver')) {
+      developerSnapshot.push(signal.observations[0]);
+    }
+  });
+
   // --- SNAPSHOT GENERATION ---
   const profileData: CanonicalProfile = {
     metadata: {
@@ -147,6 +186,7 @@ export const generateProfile = async (userId: string): Promise<CanonicalProfile>
       slug: dbProfile.slug,
       isPublic: dbProfile.is_public,
     },
+    developerSnapshot,
     identity,
     activity: {
       lastActive: globalLastActive,
