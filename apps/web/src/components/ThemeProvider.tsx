@@ -1,13 +1,15 @@
 "use client";
 
+import * as React from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 
-export function ThemeProvider({ children, ...props }: any) {
-  // Casting NextThemesProvider to any circumvents React 19 typings issues
-  const Provider = NextThemesProvider as any;
+export function ThemeProvider({ 
+  children, 
+  ...props 
+}: React.ComponentProps<typeof NextThemesProvider>) {
   return (
-    <Provider attribute="class" defaultTheme="system" enableSystem {...props}>
+    <NextThemesProvider attribute="class" defaultTheme="system" enableSystem {...props}>
       {children}
-    </Provider>
+    </NextThemesProvider>
   );
 }

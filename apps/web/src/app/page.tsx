@@ -56,10 +56,10 @@ export default function Home() {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="text-2xl font-extrabold tracking-tight">
+          <div className="text-xl sm:text-2xl font-extrabold tracking-tight">
             Dev<span className="text-indigo-600 dark:text-indigo-400">Pro</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <ThemeToggle />
             {isLoggedIn ? (
               <>
@@ -84,13 +84,13 @@ export default function Home() {
               <>
                 <Link
                   href="/login"
-                  className="px-5 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+                  className="px-3 sm:px-5 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
                 >
                   Log In
                 </Link>
                 <Link
                   href="/login"
-                  className="px-5 py-2 text-sm font-medium text-white bg-slate-900 dark:bg-slate-100 dark:text-slate-900 rounded-full hover:bg-slate-800 dark:hover:bg-white transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                  className="px-3 sm:px-5 py-2 text-sm font-medium text-white bg-slate-900 dark:bg-slate-100 dark:text-slate-900 rounded-full hover:bg-slate-800 dark:hover:bg-white transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
                 >
                   Sign Up
                 </Link>
@@ -154,24 +154,24 @@ export default function Home() {
               </div>
               
               {/* Interactive Tabs */}
-              <div className="flex gap-2">
+              <div className="flex gap-1 sm:gap-2 overflow-x-auto hide-scrollbar">
                 <button 
                   onClick={() => setActiveTab(0)}
-                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${activeTab === 0 ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}
+                  className={`px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-medium rounded-md transition-colors whitespace-nowrap ${activeTab === 0 ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}
                 >
-                  1. Syncing Data
+                  1. Syncing
                 </button>
                 <button 
                   onClick={() => setActiveTab(1)}
-                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${activeTab === 1 ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+                  className={`px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-medium rounded-md transition-colors whitespace-nowrap ${activeTab === 1 ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
                 >
-                  2. Building Profile
+                  2. Building
                 </button>
                 <button 
                   onClick={() => setActiveTab(2)}
-                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${activeTab === 2 ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}`}
+                  className={`px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-medium rounded-md transition-colors whitespace-nowrap ${activeTab === 2 ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}`}
                 >
-                  3. Live Result
+                  3. Result
                 </button>
               </div>
               <div className="w-12" /> {/* Spacer for centering */}
@@ -218,23 +218,23 @@ export default function Home() {
               </div>
 
               {/* Tab 2: Live Rendered Profile */}
-              <div className={`absolute inset-0 p-8 bg-slate-50 transition-opacity duration-500 ${activeTab === 2 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}>
-                <div className="max-w-3xl mx-auto flex gap-8">
-                  <div className="w-1/3 space-y-4">
+              <div className={`absolute inset-0 p-4 sm:p-8 bg-slate-50 transition-opacity duration-500 overflow-y-auto ${activeTab === 2 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}>
+                <div className="max-w-3xl mx-auto flex flex-col sm:flex-row gap-4 sm:gap-8">
+                  <div className="w-full sm:w-1/3 space-y-4">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-center">
                       <div className="w-20 h-20 bg-gradient-to-tr from-indigo-500 to-cyan-500 rounded-full mb-4" />
                       <div className="h-4 w-3/4 bg-slate-800 rounded mb-2" />
                       <div className="h-3 w-1/2 bg-slate-400 rounded" />
                     </div>
                     <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                      <div className="flex gap-2 flex-wrap">
+                      <div className="flex gap-2 flex-wrap justify-center">
                         <div className="h-6 w-16 bg-blue-100 rounded-full" />
                         <div className="h-6 w-20 bg-amber-100 rounded-full" />
                         <div className="h-6 w-14 bg-rose-100 rounded-full" />
                       </div>
                     </div>
                   </div>
-                  <div className="w-2/3 space-y-4">
+                  <div className="w-full sm:w-2/3 space-y-4">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                       <div className="h-5 w-1/3 bg-slate-800 rounded mb-6" />
                       <div className="grid grid-cols-2 gap-4">

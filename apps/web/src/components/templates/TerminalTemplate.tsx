@@ -1,4 +1,4 @@
-'use client';
+
 
 import React from 'react';
 import type { CanonicalProfile } from '@devpro/types';
@@ -7,6 +7,25 @@ import TechnicalFocusWidget from '../widgets/TechnicalFocusWidget';
 import ProjectsWidget from '../widgets/ProjectsWidget';
 import SignalsWidget from '../widgets/SignalsWidget';
 import ActivityWidget from '../widgets/ActivityWidget';
+import type { ThemeManifest } from '../theme-engine/contracts';
+
+export const manifest: ThemeManifest = {
+  id: 'terminal',
+  name: 'Terminal',
+  version: '1.0.0',
+  author: 'DevPro',
+  engineVersion: '1.0.0',
+  minimumSchema: 1,
+  maximumSchema: 1,
+  capabilities: {
+    darkMode: true,
+    customAccents: true,
+  },
+  layout: {
+    type: 'single-column',
+    slots: ['header', 'primary']
+  }
+};
 
 interface TerminalTemplateProps {
   profile: CanonicalProfile;

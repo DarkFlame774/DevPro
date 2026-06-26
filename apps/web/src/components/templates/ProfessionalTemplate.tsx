@@ -1,4 +1,4 @@
-'use client';
+
 
 import React from 'react';
 import type { CanonicalProfile } from '@devpro/types';
@@ -8,6 +8,25 @@ import TechnicalFocusWidget from '../widgets/TechnicalFocusWidget';
 import ProjectsWidget from '../widgets/ProjectsWidget';
 import SignalsWidget from '../widgets/SignalsWidget';
 import ActivityWidget from '../widgets/ActivityWidget';
+import type { ThemeManifest } from '../theme-engine/contracts';
+
+export const manifest: ThemeManifest = {
+  id: 'professional',
+  name: 'Professional',
+  version: '1.0.0',
+  author: 'DevPro',
+  engineVersion: '1.0.0',
+  minimumSchema: 1,
+  maximumSchema: 1,
+  capabilities: {
+    darkMode: true,
+    customAccents: true,
+  },
+  layout: {
+    type: 'single-column',
+    slots: ['header', 'primary', 'footer']
+  }
+};
 
 interface ProfessionalTemplateProps {
   profile: CanonicalProfile;
@@ -52,7 +71,7 @@ export default function ProfessionalTemplate({ profile, slug }: ProfessionalTemp
         <div className="fixed inset-0 bg-gradient-to-b from-[#0f172a] via-[#0c1220] to-[#0a0f1e] opacity-80 -z-10"></div>
         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] opacity-20 pointer-events-none blur-[100px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-600 via-purple-900 to-transparent -z-10"></div>
 
-        <main className="max-w-4xl mx-auto px-6 py-20 md:py-32 relative z-10">
+        <main className="max-w-4xl mx-auto px-6 py-12 md:py-32 relative z-10">
           <HeroWidget 
             variant="professional" 
             identity={profile.identity} 

@@ -1,4 +1,4 @@
-'use client';
+
 
 import React from 'react';
 import type { CanonicalProfile } from '@devpro/types';
@@ -8,6 +8,25 @@ import TechnicalFocusWidget from '../widgets/TechnicalFocusWidget';
 import ProjectsWidget from '../widgets/ProjectsWidget';
 import SignalsWidget from '../widgets/SignalsWidget';
 import ActivityWidget from '../widgets/ActivityWidget';
+import type { ThemeManifest } from '../theme-engine/contracts';
+
+export const manifest: ThemeManifest = {
+  id: 'minimal',
+  name: 'Minimal',
+  version: '1.0.0',
+  author: 'DevPro',
+  engineVersion: '1.0.0',
+  minimumSchema: 1,
+  maximumSchema: 1,
+  capabilities: {
+    darkMode: false,
+    customAccents: false,
+  },
+  layout: {
+    type: 'single-column',
+    slots: ['header', 'primary']
+  }
+};
 
 interface MinimalTemplateProps {
   profile: CanonicalProfile;
@@ -22,7 +41,7 @@ export default function MinimalTemplate({ profile, slug }: MinimalTemplateProps)
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
       
       <div className="min-h-screen bg-[#fafafa] text-stone-900 selection:bg-stone-200" style={{ fontFamily: "'Inter', sans-serif" }}>
-        <main className="max-w-2xl mx-auto px-6 py-20">
+        <main className="max-w-2xl mx-auto px-6 py-12 md:py-20">
           <div className="space-y-12">
             <HeroWidget 
               variant="minimal" 

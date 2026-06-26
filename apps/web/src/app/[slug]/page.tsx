@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import ProfessionalTemplate from "@/components/templates/ProfessionalTemplate";
-import MinimalTemplate from "@/components/templates/MinimalTemplate";
-import TerminalTemplate from "@/components/templates/TerminalTemplate";
+import { getTheme } from "@/components/theme-engine/registry";
 
 async function fetchProfile(slug: string) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/profiles/${slug}`, {
@@ -50,14 +48,6 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
   const profile = payload.evidence;
   const template = payload.themePreferences?.template || profile.metadata?.template || "professional";
 
-  // Dispatch to the correct template
-  switch (template) {
-    case "minimal":
-      return <MinimalTemplate profile={profile} slug={slug} />;
-    case "terminal":
-      return <TerminalTemplate profile={profile} slug={slug} />;
-    case "professional":
-    default:
-      return <ProfessionalTemplate profile={profile} slug={slug} />;
-  }
+  const ThemeComponent = getTheme(template).component;
+  return <ThemeComponent profile={profile} slug={slug} />;
 }
