@@ -6,10 +6,10 @@ import { useEffect, useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 
 const navItems = [
-  { href: "/dashboard", label: "Overview", icon: "📊" },
-  { href: "/dashboard/connections", label: "Connections", icon: "🔗" },
-  { href: "/dashboard/templates", label: "Templates", icon: "🎨" },
-  { href: "/dashboard/preview", label: "Preview", icon: "👁" },
+  { href: "/dashboard", label: "Overview" },
+  { href: "/dashboard/connections", label: "Connections" },
+  { href: "/dashboard/templates", label: "Templates" },
+  { href: "/dashboard/preview", label: "Preview" },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -87,7 +87,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200"
                 }`}
               >
-                <span className="text-lg opacity-80">{item.icon}</span>
                 {item.label}
               </Link>
             );

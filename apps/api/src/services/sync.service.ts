@@ -57,6 +57,12 @@ export const syncGitHubData = async (userId: string) => {
       updated_at = NOW();
   `, [userId, JSON.stringify(rawJson)]);
 
+  // 6. Update last_sync_at in platform_connections
+  await pool.query(
+    "UPDATE platform_connections SET last_sync_at = NOW(), status = 'connected' WHERE user_id = $1 AND platform = 'github'",
+    [userId]
+  );
+
   return { message: 'GitHub data synchronized successfully', stats: statsJson };
 };
 
@@ -124,6 +130,12 @@ export const syncLeetCodeData = async (userId: string) => {
       raw_json = EXCLUDED.raw_json,
       updated_at = NOW();
   `, [userId, JSON.stringify(rawJson)]);
+
+  // 4. Update last_sync_at in platform_connections
+  await pool.query(
+    "UPDATE platform_connections SET last_sync_at = NOW(), status = 'connected' WHERE user_id = $1 AND platform = 'leetcode'",
+    [userId]
+  );
 
   return { message: 'LeetCode data synchronized successfully', stats: statsJson };
 };
