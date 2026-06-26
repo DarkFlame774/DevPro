@@ -1,183 +1,128 @@
-"use client";
 
-import { ProfileData } from "@devpro/types";
 
-interface Props {
-  profile: ProfileData;
+import React from 'react';
+import type { CanonicalProfile } from '@devpro/types';
+import HeroWidget from '../widgets/HeroWidget';
+import TechnicalFocusWidget from '../widgets/TechnicalFocusWidget';
+import ProjectsWidget from '../widgets/ProjectsWidget';
+import SignalsWidget from '../widgets/SignalsWidget';
+import ActivityWidget from '../widgets/ActivityWidget';
+import type { ThemeManifest } from '../theme-engine/contracts';
+
+export const manifest: ThemeManifest = {
+  id: 'terminal',
+  name: 'Terminal',
+  version: '1.0.0',
+  author: 'DevPro',
+  engineVersion: '1.0.0',
+  minimumSchema: 1,
+  maximumSchema: 1,
+  capabilities: {
+    darkMode: true,
+    customAccents: false,
+  },
+  layout: {
+    type: 'single-column',
+    slots: ['header', 'primary']
+  }
+};
+
+interface TerminalTemplateProps {
+  profile: CanonicalProfile;
   slug: string;
 }
 
-export default function TerminalTemplate({ profile, slug }: Props) {
-  const { user, stats, featuredProjects, leetcode } = profile;
+const TERMINAL_STYLES = `
+@keyframes terminalReveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+.term-section {
+  animation: terminalReveal 0.4s ease-out both;
+}
+.term-section:nth-child(1)  { animation-delay: 0.05s; }
+.term-section:nth-child(2)  { animation-delay: 0.10s; }
+.term-section:nth-child(3)  { animation-delay: 0.15s; }
+.term-section:nth-child(4)  { animation-delay: 0.20s; }
+.term-section:nth-child(5)  { animation-delay: 0.25s; }
+.term-section:nth-child(6)  { animation-delay: 0.30s; }
+.term-cursor {
+  animation: cursorBlink 1s step-end infinite;
+}
+`;
 
-  const topLangs = Object.entries(stats.top_languages || {})
-    .sort(([, a], [, b]) => (b as number) - (a as number))
-    .slice(0, 6);
+function SectionDivider() {
+  return <div className="border-t border-[#1a1a1a] w-full" />;
+}
 
+export default function TerminalTemplate({ profile, slug }: TerminalTemplateProps) {
+  const name = profile.identity?.name || slug;
   return (
-    <div className="min-h-screen bg-[#0c0c0c] text-[#b0b0b0] font-mono selection:bg-green-900/40 selection:text-green-300">
-
-      <main className="max-w-3xl mx-auto px-6 py-12">
-
-        {/* ── Terminal Window Chrome ── */}
-        <div className="border border-[#2a2a2a] rounded-xl overflow-hidden shadow-2xl">
-
-          {/* Title Bar */}
-          <div className="bg-[#1a1a1a] px-4 py-3 flex items-center gap-3 border-b border-[#2a2a2a]">
-            <div className="flex gap-2">
-              <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-              <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
-              <div className="w-3 h-3 rounded-full bg-[#28c840]" />
-            </div>
-            <span className="text-xs text-[#666] ml-2">
-              {user.name || slug} — devpro
-            </span>
-          </div>
-
-          {/* Terminal Body */}
-          <div className="bg-[#0c0c0c] p-6 md:p-8 space-y-6 text-sm leading-relaxed">
-
-            {/* ── whoami ── */}
-            <div>
-              <div className="text-green-400">
-                <span className="text-[#666]">$</span> whoami
+    <>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+      <style dangerouslySetInnerHTML={{ __html: TERMINAL_STYLES }} />
+      
+      <div className="min-h-screen bg-[#000000] text-[#a3a3a3] selection:bg-green-900/40 selection:text-green-300" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+        <main className="max-w-3xl mx-auto px-4 py-12 md:py-20">
+          <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl overflow-hidden shadow-2xl">
+            {/* Terminal Chrome Header */}
+            <div className="flex items-center px-4 py-3 border-b border-[#1a1a1a] bg-[#050505]">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-[#ff5f57] shadow-[0_0_8px_rgba(255,95,87,0.4)]"></div>
+                <div className="w-3 h-3 rounded-full bg-[#febc2e] shadow-[0_0_8px_rgba(254,188,46,0.4)]"></div>
+                <div className="w-3 h-3 rounded-full bg-[#28c840] shadow-[0_0_8px_rgba(40,200,64,0.4)]"></div>
               </div>
-              <div className="mt-2 flex items-center gap-4">
-                {user.avatar_url && (
-                  <img
-                    src={user.avatar_url}
-                    alt={user.name || slug}
-                    className="w-14 h-14 rounded-lg border border-[#2a2a2a] object-cover"
-                  />
-                )}
-                <div>
-                  <div className="text-white text-lg font-bold">{user.name || slug}</div>
-                  {user.location && <div className="text-[#666] text-xs mt-0.5">📍 {user.location}</div>}
+              <div className="flex-1 text-center text-[#525252] text-xs font-bold tracking-widest uppercase">
+                {name} — bash
+              </div>
+              <div className="w-16"></div> {/* Spacer for centering */}
+            </div>
+
+            <div className="p-6 sm:p-8">
+              <HeroWidget 
+                variant="terminal" 
+                identity={profile.identity} 
+                slug={slug} 
+                snapshot={profile.developerSnapshot} 
+              />
+              <SectionDivider />
+              <TechnicalFocusWidget 
+                variant="terminal" 
+                technicalFocus={profile.technicalFocus || { languages: [], technologies: [] }} 
+              />
+              <SectionDivider />
+              <ProjectsWidget 
+                variant="terminal" 
+                projects={profile.projects || []} 
+              />
+              <SectionDivider />
+              <SignalsWidget 
+                variant="terminal" 
+                signals={profile.developerSignals || []} 
+              />
+              <SectionDivider />
+              <ActivityWidget 
+                variant="terminal" 
+                activity={profile.activity || { lastActive: null, contributionSummary: [] }} 
+              />
+              <SectionDivider />
+              <div className="term-section pt-6">
+                <div className="flex items-center gap-1">
+                  <span className="text-[#525252]">$</span>
+                  <span className="text-[#4ade80]">&nbsp;</span>
+                  <span className="term-cursor inline-block w-2.5 h-[18px] bg-[#4ade80] rounded-[1px] shadow-[0_0_8px_rgba(74,222,128,0.3)]" />
                 </div>
               </div>
-              <div className="mt-2 text-[#999]">
-                {user.bio || "Software Engineer & Open Source Contributor"}
-              </div>
-            </div>
-
-            <div className="border-t border-[#1a1a1a]" />
-
-            {/* ── stats ── */}
-            <div>
-              <div className="text-green-400">
-                <span className="text-[#666]">$</span> cat stats.json
-              </div>
-              <div className="mt-2 bg-[#111] border border-[#1e1e1e] rounded-lg p-4">
-                <pre className="text-xs">
-{`{
-  "followers": ${stats.followers || 0},
-  "total_stars": ${stats.total_stars || 0},
-  "public_repos": ${featuredProjects.length}+
-}`}
-                </pre>
-              </div>
-            </div>
-
-            <div className="border-t border-[#1a1a1a]" />
-
-            {/* ── languages ── */}
-            <div>
-              <div className="text-green-400">
-                <span className="text-[#666]">$</span> cat languages.txt
-              </div>
-              <div className="mt-3 space-y-2">
-                {topLangs.map(([lang, count]) => {
-                  const maxCount = Math.max(...topLangs.map(([, c]) => c as number));
-                  const barWidth = maxCount > 0 ? Math.round(((count as number) / maxCount) * 20) : 0;
-                  return (
-                    <div key={lang} className="flex items-center gap-3">
-                      <span className="w-24 text-right text-[#888] text-xs">{lang}</span>
-                      <span className="text-green-500 tracking-tighter">{"█".repeat(barWidth)}{"░".repeat(20 - barWidth)}</span>
-                      <span className="text-[#555] text-xs">{count as number}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* ── LeetCode ── */}
-            {leetcode && leetcode.profile && leetcode.submitStats && (
-              <>
-                <div className="border-t border-[#1a1a1a]" />
-                <div>
-                  <div className="text-green-400">
-                    <span className="text-[#666]">$</span> leetcode --stats
-                  </div>
-                  <div className="mt-2 bg-[#111] border border-[#1e1e1e] rounded-lg p-4">
-                    <div className="text-xs space-y-1">
-                      <div><span className="text-[#666]">rank:</span> <span className="text-amber-400">{leetcode.profile.ranking || "N/A"}</span></div>
-                      {leetcode.submitStats.acSubmissionNum?.map((stat: any) => (
-                        <div key={stat.difficulty}>
-                          <span className="text-[#666]">{stat.difficulty.toLowerCase().padEnd(8)}:</span>{" "}
-                          <span className={
-                            stat.difficulty === "Easy" ? "text-emerald-400" :
-                            stat.difficulty === "Medium" ? "text-amber-400" : "text-rose-400"
-                          }>
-                            {stat.count} solved
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-
-            <div className="border-t border-[#1a1a1a]" />
-
-            {/* ── repos ── */}
-            <div>
-              <div className="text-green-400">
-                <span className="text-[#666]">$</span> ls ~/projects --sort=stars
-              </div>
-              <div className="mt-3 space-y-2">
-                {featuredProjects.map((repo: any) => (
-                  <a
-                    key={repo.id}
-                    href={repo.html_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group block bg-[#111] border border-[#1e1e1e] rounded-lg p-4 hover:border-green-900/50 hover:bg-[#141414] transition-all duration-200"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1 min-w-0">
-                        <span className="text-cyan-400 group-hover:text-cyan-300 font-bold text-sm">
-                          {repo.name}
-                        </span>
-                        {repo.language && (
-                          <span className="text-[#444] text-xs ml-2">[{repo.language}]</span>
-                        )}
-                        <p className="text-[#666] text-xs mt-1 line-clamp-1">
-                          {repo.description || "No description."}
-                        </p>
-                      </div>
-                      <span className="text-amber-400/70 text-xs ml-3 shrink-0">★{repo.stargazers_count}</span>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            <div className="border-t border-[#1a1a1a]" />
-
-            {/* ── Blinking cursor ── */}
-            <div className="text-green-400">
-              <span className="text-[#666]">$</span>{" "}
-              <span className="inline-block w-2 h-4 bg-green-400 animate-pulse" />
             </div>
           </div>
-        </div>
-
-        {/* ── Footer ── */}
-        <footer className="mt-8 text-center text-[#333] text-xs">
-          Built with DevPro
-        </footer>
-      </main>
-    </div>
+        </main>
+      </div>
+    </>
   );
 }

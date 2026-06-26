@@ -20,7 +20,7 @@ router.get('/status', requireAuth, async (req: Request, res: Response) => {
 
     // Fetch profile settings
     const profileRes = await pool.query(
-      'SELECT slug, template, is_public, profile_data IS NOT NULL AS has_snapshot, updated_at FROM profiles WHERE user_id = $1',
+      'SELECT slug, template, accent_color, is_public, profile_data IS NOT NULL AS has_snapshot, updated_at FROM profiles WHERE user_id = $1',
       [userId]
     );
 
@@ -42,6 +42,7 @@ router.get('/status', requireAuth, async (req: Request, res: Response) => {
       profile: profile ? {
         slug: profile.slug,
         template: profile.template,
+        accentColor: profile.accent_color || 'blue',
         isPublic: profile.is_public,
         hasSnapshot: profile.has_snapshot,
         updatedAt: profile.updated_at,

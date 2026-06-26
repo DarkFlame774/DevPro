@@ -1,163 +1,104 @@
-"use client";
 
-import { ProfileData } from "@devpro/types";
 
-interface Props {
-  profile: ProfileData;
+import React from 'react';
+import type { CanonicalProfile } from '@devpro/types';
+import HeroWidget from '../widgets/HeroWidget';
+import SnapshotWidget from '../widgets/SnapshotWidget';
+import TechnicalFocusWidget from '../widgets/TechnicalFocusWidget';
+import ProjectsWidget from '../widgets/ProjectsWidget';
+import SignalsWidget from '../widgets/SignalsWidget';
+import ActivityWidget from '../widgets/ActivityWidget';
+import type { ThemeManifest } from '../theme-engine/contracts';
+
+export const manifest: ThemeManifest = {
+  id: 'professional',
+  name: 'Professional',
+  version: '1.0.0',
+  author: 'DevPro',
+  engineVersion: '1.0.0',
+  minimumSchema: 1,
+  maximumSchema: 1,
+  capabilities: {
+    darkMode: true,
+    customAccents: false,
+  },
+  layout: {
+    type: 'single-column',
+    slots: ['header', 'primary', 'footer']
+  }
+};
+
+interface ProfessionalTemplateProps {
+  profile: CanonicalProfile;
   slug: string;
 }
 
-export default function ProfessionalTemplate({ profile, slug }: Props) {
-  const { user, stats, featuredProjects, leetcode } = profile;
-
+export default function ProfessionalTemplate({ profile, slug }: ProfessionalTemplateProps) {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500/30">
-      {/* Ambient background glow */}
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-600/15 blur-[120px]" />
-        <div className="absolute bottom-[-15%] right-[-5%] w-[35%] h-[35%] rounded-full bg-cyan-600/15 blur-[120px]" />
-        <div className="absolute top-[50%] left-[60%] w-[25%] h-[25%] rounded-full bg-violet-600/10 blur-[100px]" />
+    <>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+      
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shimmer {
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
+        }
+        @keyframes pulseGlow {
+          0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px rgba(96, 165, 250, 0.5); }
+          50% { opacity: 0.6; transform: scale(0.85); box-shadow: 0 0 0 rgba(96, 165, 250, 0); }
+        }
+        .animate-fadeInUp {
+          opacity: 0;
+          animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .stagger-1 { animation-delay: 100ms; }
+        .stagger-2 { animation-delay: 200ms; }
+        .stagger-3 { animation-delay: 300ms; }
+        .stagger-4 { animation-delay: 400ms; }
+        .stagger-5 { animation-delay: 500ms; }
+        .stagger-6 { animation-delay: 600ms; }
+      `}} />
+
+      <div className="min-h-screen text-slate-300 selection:bg-blue-500/30 selection:text-blue-200 relative overflow-hidden font-sans" style={{ fontFamily: "'Inter', sans-serif" }}>
+        {/* Background Gradients */}
+        <div className="fixed inset-0 bg-[#0a0f1e] -z-20"></div>
+        <div className="fixed inset-0 bg-gradient-to-b from-[#0f172a] via-[#0c1220] to-[#0a0f1e] opacity-80 -z-10"></div>
+        <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] opacity-20 pointer-events-none blur-[100px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-600 via-purple-900 to-transparent -z-10"></div>
+
+        <main className="max-w-4xl mx-auto px-6 py-12 md:py-32 relative z-10">
+          <HeroWidget 
+            variant="professional" 
+            identity={profile.identity} 
+            slug={slug} 
+          />
+          <SnapshotWidget 
+            variant="professional" 
+            snapshot={profile.developerSnapshot} 
+          />
+          <TechnicalFocusWidget 
+            variant="professional" 
+            technicalFocus={profile.technicalFocus || { languages: [], technologies: [] }} 
+          />
+          <ProjectsWidget 
+            variant="grid" 
+            projects={profile.projects || []} 
+          />
+          <SignalsWidget 
+            variant="professional" 
+            signals={profile.developerSignals || []} 
+          />
+          <ActivityWidget 
+            variant="professional" 
+            activity={profile.activity || { lastActive: null, contributionSummary: [] }} 
+          />
+        </main>
       </div>
-
-      <main className="relative z-10 max-w-5xl mx-auto px-6 py-20">
-
-        {/* ── Hero Card ── */}
-        <header className="backdrop-blur-lg bg-white/[0.04] border border-white/[0.08] rounded-3xl p-10 mb-14 flex flex-col md:flex-row items-center gap-10 shadow-2xl">
-          {user.avatar_url && (
-            <img
-              src={user.avatar_url}
-              alt={user.name || slug}
-              className="w-36 h-36 rounded-2xl border-2 border-white/10 object-cover shadow-lg"
-            />
-          )}
-          <div className="text-center md:text-left flex-1">
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
-              {user.name || slug}
-            </h1>
-            <p className="text-lg text-slate-400 mt-3 max-w-xl leading-relaxed">
-              {user.bio || "Software Engineer & Open Source Contributor"}
-            </p>
-            {user.location && (
-              <p className="text-sm text-slate-500 mt-2">📍 {user.location}</p>
-            )}
-            <div className="mt-5 flex flex-wrap gap-3 justify-center md:justify-start">
-              <span className="px-4 py-1.5 bg-white/[0.06] border border-white/[0.08] rounded-full text-sm font-medium text-slate-300">
-                {stats.followers || 0} Followers
-              </span>
-              <span className="px-4 py-1.5 bg-white/[0.06] border border-white/[0.08] rounded-full text-sm font-medium text-slate-300">
-                ★ {stats.total_stars || 0} Stars
-              </span>
-            </div>
-          </div>
-        </header>
-
-        {/* ── Stats Row ── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-14">
-
-          {/* Top Languages */}
-          <section className="backdrop-blur-lg bg-white/[0.04] border border-white/[0.08] rounded-2xl p-8 shadow-xl">
-            <h2 className="text-xl font-bold mb-6 text-slate-200 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-indigo-400 inline-block" />
-              Top Languages
-            </h2>
-            <div className="space-y-3">
-              {Object.entries(stats.top_languages || {})
-                .sort(([, a], [, b]) => (b as number) - (a as number))
-                .slice(0, 5)
-                .map(([lang, count]) => {
-                  const maxCount = Math.max(...Object.values(stats.top_languages || {}).map(Number));
-                  const pct = maxCount > 0 ? ((count as number) / maxCount) * 100 : 0;
-                  return (
-                    <div key={lang}>
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="font-medium text-slate-200 text-sm">{lang}</span>
-                        <span className="text-slate-500 text-xs">{count as number} repos</span>
-                      </div>
-                      <div className="w-full bg-white/[0.06] rounded-full h-1.5">
-                        <div
-                          className="bg-gradient-to-r from-indigo-500 to-cyan-500 h-1.5 rounded-full transition-all duration-500"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
-          </section>
-
-          {/* LeetCode Stats */}
-          {leetcode && leetcode.profile && leetcode.submitStats ? (
-            <section className="backdrop-blur-lg bg-white/[0.04] border border-white/[0.08] rounded-2xl p-8 shadow-xl">
-              <h2 className="text-xl font-bold mb-6 text-slate-200 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
-                LeetCode
-              </h2>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white/[0.04] border border-white/[0.06] p-4 rounded-xl text-center">
-                  <div className="text-2xl font-bold text-white">{leetcode.profile.ranking || "N/A"}</div>
-                  <div className="text-xs text-slate-500 mt-1 uppercase tracking-wider">Rank</div>
-                </div>
-                {leetcode.submitStats.acSubmissionNum?.map((stat: any) => (
-                  <div key={stat.difficulty} className="bg-white/[0.04] border border-white/[0.06] p-4 rounded-xl text-center">
-                    <div className={`text-2xl font-bold ${
-                      stat.difficulty === "Easy" ? "text-emerald-400" :
-                      stat.difficulty === "Medium" ? "text-amber-400" : "text-rose-400"
-                    }`}>
-                      {stat.count}
-                    </div>
-                    <div className="text-xs text-slate-500 mt-1 uppercase tracking-wider">{stat.difficulty}</div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : (
-            <section className="backdrop-blur-lg bg-white/[0.04] border border-white/[0.08] rounded-2xl p-8 shadow-xl flex items-center justify-center">
-              <p className="text-slate-600 italic text-sm">LeetCode not connected</p>
-            </section>
-          )}
-        </div>
-
-        {/* ── Featured Projects ── */}
-        <section>
-          <h2 className="text-2xl font-bold mb-8 text-slate-200 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 inline-block" />
-            Featured Projects
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {featuredProjects.map((repo: any) => (
-              <a
-                key={repo.id}
-                href={repo.html_url}
-                target="_blank"
-                rel="noreferrer"
-                className="group block backdrop-blur-lg bg-white/[0.04] border border-white/[0.08] rounded-2xl p-6 shadow-lg transition-all duration-300 hover:-translate-y-1.5 hover:bg-white/[0.07] hover:border-indigo-500/20 hover:shadow-indigo-500/10"
-              >
-                <h3 className="text-lg font-bold text-slate-100 group-hover:text-indigo-300 truncate transition-colors duration-200">
-                  {repo.name}
-                </h3>
-                <p className="text-slate-500 text-sm mt-2 line-clamp-2 min-h-[2.5rem] leading-relaxed">
-                  {repo.description || "No description provided."}
-                </p>
-                <div className="mt-4 flex justify-between items-center text-sm">
-                  <span className="flex items-center gap-1 text-amber-400/80 font-medium">
-                    ★ {repo.stargazers_count}
-                  </span>
-                  {repo.language && (
-                    <span className="text-slate-500 text-xs px-2 py-0.5 bg-white/[0.06] rounded-full">
-                      {repo.language}
-                    </span>
-                  )}
-                </div>
-              </a>
-            ))}
-          </div>
-        </section>
-
-        {/* ── Footer ── */}
-        <footer className="mt-20 pt-8 border-t border-white/[0.06] text-center text-slate-600 text-sm">
-          Built with DevPro
-        </footer>
-      </main>
-    </div>
+    </>
   );
 }

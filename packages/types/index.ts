@@ -21,33 +21,72 @@ export interface LoginRequest {
   password?: string;
 }
 
-export interface ProfileData {
-  user: {
-    name: string | null;
-    bio: string | null;
-    avatar_url: string | null;
-    location: string | null;
-  };
-  stats: {
-    total_stars: number;
-    followers: number;
-    top_languages: Record<string, number>;
-  };
-  featuredProjects: Array<{
-    id: number;
-    name: string;
-    description: string | null;
-    html_url: string;
-    stargazers_count: number;
-    language: string | null;
-  }>;
-  leetcode: any | null;
+export interface Evidence {
+  label: string;
+  value: string | number;
+  sourcePlatform: string;
+  source?: 'evidence' | 'override';
+}
+
+export interface CanonicalProject {
+  id: string;
+  title: string;
+  titleSource?: 'evidence' | 'override';
+  description: string | null;
+  descriptionSource?: 'evidence' | 'override';
+  url: string;
+  tags?: string[];
+  evidence: Evidence[];
+}
+
+export interface CanonicalLanguage {
+  name: string;
+  category?: string;
+  evidence: Evidence[];
+}
+
+export interface CanonicalTechnology {
+  name: string;
+  evidence: Evidence[];
+}
+
+export interface DeveloperSignal {
+  observations: string[];
+  evidence: Evidence[];
+}
+
+export interface SnapshotItem {
+  label: string;
+  evidence: Evidence[];
+}
+
+export interface CanonicalProfile {
   metadata: {
-    template: TemplateType;
-    is_public: boolean;
+    schemaVersion: number;
+    generatedAt: string;
+    isPublic: boolean;
     slug: string | null;
-    generated_at: string;
   };
+  developerSnapshot: SnapshotItem[];
+  identity: {
+    name: string | null;
+    avatarUrl: string | null;
+    headline: string | null;
+    bio: string | null;
+    location: string | null;
+    source?: 'evidence' | 'override';
+  };
+  activity: {
+    lastActive: string | null;
+    contributionSummary: Evidence[];
+  };
+  projects: CanonicalProject[];
+  technicalFocus: {
+    languages: CanonicalLanguage[];
+    technologies: CanonicalTechnology[];
+  };
+  developerSignals: DeveloperSignal[];
 }
 
 export type TemplateType = 'minimal' | 'professional' | 'terminal';
+export type AccentColor = 'blue' | 'purple' | 'emerald';

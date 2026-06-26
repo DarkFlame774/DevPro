@@ -46,17 +46,22 @@ export const syncGitHubData = async (userId: string) => {
     followers: profileJson.followers,
   };
 
-  // 5. Upsert into github_data table
+  // 5. Upsert into raw_platform_data table
+  const rawJson = { profile: profileJson, repos: reposJson, stats: statsJson };
   await pool.query(`
-    INSERT INTO github_data (user_id, profile_json, repos_json, stats_json, updated_at)
-    VALUES ($1, $2, $3, $4, NOW())
-    ON CONFLICT (user_id) 
+    INSERT INTO raw_platform_data (user_id, platform, raw_json, updated_at)
+    VALUES ($1, 'github', $2, NOW())
+    ON CONFLICT (user_id, platform) 
     DO UPDATE SET 
-      profile_json = EXCLUDED.profile_json,
-      repos_json = EXCLUDED.repos_json,
-      stats_json = EXCLUDED.stats_json,
+      raw_json = EXCLUDED.raw_json,
       updated_at = NOW();
-  `, [userId, JSON.stringify(profileJson), JSON.stringify(reposJson), JSON.stringify(statsJson)]);
+  `, [userId, JSON.stringify(rawJson)]);
+
+  // 6. Update last_sync_at in platform_connections
+  await pool.query(
+    "UPDATE platform_connections SET last_sync_at = NOW(), status = 'connected' WHERE user_id = $1 AND platform = 'github'",
+    [userId]
+  );
 
   return { message: 'GitHub data synchronized successfully', stats: statsJson };
 };
@@ -115,15 +120,22 @@ export const syncLeetCodeData = async (userId: string) => {
 
   const statsJson = result.data.matchedUser;
 
-  // 3. Upsert into leetcode_data table
+  // 3. Upsert into raw_platform_data table
+  const rawJson = { stats: statsJson };
   await pool.query(`
-    INSERT INTO leetcode_data (user_id, stats_json, updated_at)
-    VALUES ($1, $2, NOW())
-    ON CONFLICT (user_id) 
+    INSERT INTO raw_platform_data (user_id, platform, raw_json, updated_at)
+    VALUES ($1, 'leetcode', $2, NOW())
+    ON CONFLICT (user_id, platform) 
     DO UPDATE SET 
-      stats_json = EXCLUDED.stats_json,
+      raw_json = EXCLUDED.raw_json,
       updated_at = NOW();
-  `, [userId, JSON.stringify(statsJson)]);
+  `, [userId, JSON.stringify(rawJson)]);
+
+  // 4. Update last_sync_at in platform_connections
+  await pool.query(
+    "UPDATE platform_connections SET last_sync_at = NOW(), status = 'connected' WHERE user_id = $1 AND platform = 'leetcode'",
+    [userId]
+  );
 
   return { message: 'LeetCode data synchronized successfully', stats: statsJson };
 };

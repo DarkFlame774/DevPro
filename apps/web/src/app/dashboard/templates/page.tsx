@@ -6,9 +6,9 @@ const templates = [
   {
     id: "professional",
     name: "Professional",
-    description: "Dark mode with glassmorphism cards, gradient backgrounds, and hover animations. Best for showcasing a premium portfolio.",
+    description: "Clean white design with accent colors, premium typography, and structured sections. Best for showcasing a polished portfolio.",
     color: "bg-indigo-600",
-    preview: "bg-slate-900",
+    preview: "bg-white",
   },
   {
     id: "minimal",
@@ -25,6 +25,7 @@ const templates = [
     preview: "bg-gray-950",
   },
 ];
+
 
 export default function TemplatesPage() {
   const [current, setCurrent] = useState("professional");
@@ -49,8 +50,8 @@ export default function TemplatesPage() {
   const handleSelect = async (templateId: string) => {
     setCurrent(templateId);
     setMessage("");
+
     try {
-      // Save settings with the new template
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/profiles/settings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -60,7 +61,6 @@ export default function TemplatesPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      // Auto-regenerate the snapshot
       const genRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/profiles/generate`, {
         method: "POST",
         credentials: "include",
@@ -73,6 +73,7 @@ export default function TemplatesPage() {
       setMessage(`Error: ${err.message}`);
     }
   };
+
 
   if (loading) return <div className="text-gray-500">Loading...</div>;
 
@@ -103,7 +104,6 @@ export default function TemplatesPage() {
               )}
               
               <div className={`h-40 ${tpl.color} flex items-center justify-center p-6 relative`}>
-                {/* Fake UI mockup inside the template card */}
                 <div className="w-full h-full bg-white/90 dark:bg-slate-950/90 backdrop-blur-sm rounded-lg shadow-sm border border-slate-200/50 dark:border-slate-800/50 p-3 space-y-2">
                   <div className="flex gap-2">
                     <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800" />
@@ -124,6 +124,7 @@ export default function TemplatesPage() {
           );
         })}
       </div>
+
     </div>
   );
 }
