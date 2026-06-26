@@ -10,6 +10,7 @@ import connectionsRoutes from './routes/connections.routes';
 import profilesRoutes from './routes/profiles.routes';
 import dashboardRoutes from './routes/dashboard.routes';
 import overridesRoutes from './routes/overrides.routes';
+import projectsRoutes from './routes/projects.routes';
 
 // Ensure dotenv is loaded pointing to correct .env
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -40,6 +41,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/sync', syncRoutes);
 app.use('/api/connections', connectionsRoutes);
 app.use('/api/profiles', profilesRoutes);
+app.use('/api/projects', projectsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/overrides', overridesRoutes);
 
