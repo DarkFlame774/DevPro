@@ -20,7 +20,7 @@ export const manifest: ThemeManifest = {
   maximumSchema: 1,
   capabilities: {
     darkMode: true,
-    customAccents: true,
+    customAccents: false,
   },
   layout: {
     type: 'single-column',

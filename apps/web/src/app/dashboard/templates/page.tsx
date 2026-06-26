@@ -26,15 +26,9 @@ const templates = [
   },
 ];
 
-const accentColors = [
-  { id: "blue", name: "Blue", bg: "bg-blue-500", ring: "ring-blue-300" },
-  { id: "purple", name: "Purple", bg: "bg-purple-500", ring: "ring-purple-300" },
-  { id: "emerald", name: "Emerald", bg: "bg-emerald-500", ring: "ring-emerald-300" },
-];
 
 export default function TemplatesPage() {
   const [current, setCurrent] = useState("professional");
-  const [accent, setAccent] = useState("blue");
   const [slug, setSlug] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [message, setMessage] = useState("");
@@ -46,7 +40,6 @@ export default function TemplatesPage() {
       .then((data) => {
         if (data.profile) {
           setCurrent(data.profile.template || "professional");
-          setAccent(data.profile.accentColor || "blue");
           setSlug(data.profile.slug || "");
           setIsPublic(data.profile.isPublic || false);
         }
@@ -54,19 +47,16 @@ export default function TemplatesPage() {
       });
   }, []);
 
-  const handleSelect = async (templateId: string, accentColor?: string) => {
+  const handleSelect = async (templateId: string) => {
     setCurrent(templateId);
-    if (accentColor) setAccent(accentColor);
     setMessage("");
-
-    const finalAccent = accentColor || accent;
 
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/profiles/settings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ slug, isPublic, template: templateId, accentColor: finalAccent }),
+        body: JSON.stringify({ slug, isPublic, template: templateId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -78,16 +68,12 @@ export default function TemplatesPage() {
       const genData = await genRes.json();
       if (!genRes.ok) throw new Error(genData.error);
 
-      setMessage(`Switched to ${templateId}${templateId === "professional" ? ` (${finalAccent})` : ""} and regenerated your profile!`);
+      setMessage(`Switched to ${templateId} and regenerated your profile!`);
     } catch (err: any) {
       setMessage(`Error: ${err.message}`);
     }
   };
 
-  const handleAccentChange = (accentId: string) => {
-    setAccent(accentId);
-    handleSelect(current, accentId);
-  };
 
   if (loading) return <div className="text-gray-500">Loading...</div>;
 
@@ -139,29 +125,6 @@ export default function TemplatesPage() {
         })}
       </div>
 
-      {/* Accent Color Picker — only shown when Professional is selected */}
-      {current === "professional" && (
-        <div className="mt-8 p-6 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1">Accent Color</h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Choose the accent color for your Professional portfolio</p>
-          <div className="flex gap-4">
-            {accentColors.map((ac) => (
-              <button
-                key={ac.id}
-                onClick={() => handleAccentChange(ac.id)}
-                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg border-2 transition-all ${
-                  accent === ac.id
-                    ? `border-slate-900 dark:border-white ring-2 ${ac.ring} shadow-md`
-                    : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
-                }`}
-              >
-                <div className={`w-5 h-5 rounded-full ${ac.bg} shadow-sm`} />
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{ac.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
